@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Shield, RefreshCw, Download, Upload, LogOut, User as UserIcon, Lock, Unlock, ChevronRight, ArrowLeft, Cpu, Radio, AlertTriangle, CheckCircle2, Share2, Image as ImageIcon, Briefcase, Map, MessageSquare, ScanLine, Zap, Timer, Trophy, Activity, Eye } from 'lucide-react';
 import { puzzles, Puzzle, Category } from './data/puzzles';
-import LiveSpyBot from './components/LiveSpyBot';
 import Tutorial from './components/Tutorial';
 
 type User = {
@@ -49,7 +48,6 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState<Category | 'ALL_DATA_FILES'>('ALL_DATA_FILES');
   const [gameMode, setGameMode] = useState<'TRAINING' | 'CHALLENGE'>('TRAINING');
   const [sortBy, setSortBy] = useState<'DIFFICULTY' | 'POINTS' | 'TITLE' | 'STATUS'>('DIFFICULTY');
-  const [showBot, setShowBot] = useState(false);
   const [visibleCount, setVisibleCount] = useState(12);
   const [dailyChallengeId, setDailyChallengeId] = useState<string>('');
   const [timeLeft, setTimeLeft] = useState<string>('');
@@ -244,12 +242,6 @@ export default function App() {
             onClick={() => { setView('dashboard'); setActivePuzzle(null); }}
           >
             OPERATIONAL_THEATRE
-          </button>
-          <button 
-            className="flex-1 px-4 py-2 text-xs font-bold tracking-widest rounded-lg text-[#a3a3a3] hover:text-white hover:bg-white/5 transition-all font-mono"
-            onClick={() => setShowBot(!showBot)}
-          >
-            SUPPORT_NODE
           </button>
         </div>
       </div>
@@ -620,17 +612,9 @@ export default function App() {
           <MessageSquare className="w-6 h-6" />
           <span className="text-[9px] font-bold tracking-widest font-mono">COMMS</span>
         </button>
-        <button 
-          onClick={() => setShowBot(!showBot)}
-          className={`flex flex-col items-center gap-1 transition-all ${showBot ? 'text-[#3b82f6]' : 'text-[#555]'}`}
-        >
-          <ScanLine className="w-6 h-6" />
-          <span className="text-[9px] font-bold tracking-widest font-mono">HELP BOT</span>
-        </button>
       </div>
 
       <AnimatePresence>
-        {showBot && <LiveSpyBot onClose={() => setShowBot(false)} />}
       </AnimatePresence>
     </div>
   );
