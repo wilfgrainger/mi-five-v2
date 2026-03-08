@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Shield, RefreshCw, Download, Upload, LogOut, User as UserIcon, Lock, Unlock, ChevronRight, ArrowLeft, Cpu, Radio, AlertTriangle, CheckCircle2, Share2, Image as ImageIcon, Briefcase, Map, MessageSquare, ScanLine, Zap, Timer, Trophy } from 'lucide-react';
+import { Shield, RefreshCw, Download, Upload, LogOut, User as UserIcon, Lock, Unlock, ChevronRight, ArrowLeft, Cpu, Radio, AlertTriangle, CheckCircle2, Share2, Image as ImageIcon, Briefcase, Map, MessageSquare, ScanLine, Zap, Timer, Trophy, Activity, Eye } from 'lucide-react';
 import { puzzles, Puzzle, Category } from './data/puzzles';
 import LiveSpyBot from './components/LiveSpyBot';
 import Tutorial from './components/Tutorial';
@@ -636,6 +636,222 @@ export default function App() {
   );
 }
 
+function EmojiCryptoSolver({ puzzle, isSolved, onSolved }: { puzzle: Puzzle, isSolved: boolean, onSolved: (points: number) => void }) {
+  const [answer, setAnswer] = useState('');
+  const [status, setStatus] = useState<'idle' | 'checking' | 'correct' | 'incorrect'>(isSolved ? 'correct' : 'idle');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isSolved) return;
+
+    setStatus('checking');
+    setTimeout(() => {
+      if (answer.trim().toUpperCase() === puzzle.answer.toUpperCase()) {
+        setStatus('correct');
+        onSolved(puzzle.points);
+      } else {
+        setStatus('incorrect');
+        setTimeout(() => setStatus('idle'), 2000);
+      }
+    }, 800);
+  };
+
+  return (
+    <div className="bg-[#050505] border border-white/10 rounded-2xl p-6 md:p-8 relative shadow-inner">
+      <div className="flex justify-between items-center mb-6">
+        <span className="text-[10px] text-[#a3a3a3] font-bold tracking-widest font-mono uppercase">EMOJI DECRYPTION PROTOCOL</span>
+        <div className="flex items-center gap-2 bg-[#3b82f6]/10 px-3 py-1.5 rounded-md border border-[#3b82f6]/30">
+          <span className="text-[9px] text-[#3b82f6] font-bold tracking-widest font-mono">READY</span>
+          <Cpu className="w-3 h-3 text-[#3b82f6]" />
+        </div>
+      </div>
+
+      <div className="mb-8 p-6 bg-[#111] border border-white/5 rounded-xl text-center">
+        <p className="text-4xl md:text-6xl mb-2">{puzzle.observationData}</p>
+        <p className="text-[10px] text-[#737373] tracking-widest font-mono uppercase mt-4">INTERCEPTED FRAGMENT</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="relative">
+          <input
+            type="text"
+            value={isSolved ? puzzle.answer : answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            disabled={isSolved || status === 'checking'}
+            className={`w-full bg-[#111] border-2 ${status === 'incorrect' ? 'border-[#ef4444] text-[#ef4444]' : status === 'correct' ? 'border-[#10b981] text-[#10b981]' : 'border-white/10 focus:border-[#3b82f6] text-white'} rounded-xl p-5 text-center text-xl md:text-2xl font-bold tracking-[0.2em] focus:outline-none focus:ring-4 focus:ring-[#3b82f6]/20 transition-all disabled:opacity-50 font-mono shadow-inner`}
+            placeholder={isSolved ? "" : "TRANSLATE EMOJIS HERE..."}
+          />
+          {status === 'incorrect' && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="absolute -bottom-8 left-0 right-0 text-center text-[10px] text-[#ef4444] tracking-widest font-bold font-mono uppercase"
+            >
+              INCORRECT TRANSLATION. TRY AGAIN!
+            </motion.div>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          disabled={isSolved || status === 'checking' || !answer.trim()}
+          className={`w-full py-4 rounded-xl font-bold tracking-widest text-xs flex items-center justify-center gap-3 transition-all font-mono ${
+            isSolved
+              ? 'bg-[#10b981]/10 text-[#10b981] border border-[#10b981]/30 cursor-default'
+              : status === 'checking'
+                ? 'bg-[#3b82f6]/30 text-white cursor-wait border border-[#3b82f6]/50'
+                : 'bg-gradient-to-r from-[#2563eb] to-[#3b82f6] hover:from-[#1d4ed8] hover:to-[#2563eb] text-white shadow-[0_4px_20px_rgba(59,130,246,0.4)] hover:shadow-[0_4px_25px_rgba(59,130,246,0.6)]'
+          }`}
+        >
+          {isSolved ? (
+            <><CheckCircle2 className="w-5 h-5" /> DECRYPTION COMPLETE</>
+          ) : status === 'checking' ? (
+            <><RefreshCw className="w-5 h-5 animate-spin" /> VERIFYING...</>
+          ) : (
+            <><Shield className="w-5 h-5" /> SUBMIT DECRYPTION</>
+          )}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+function ObservationSolver({ puzzle, isSolved, onSolved }: { puzzle: Puzzle, isSolved: boolean, onSolved: (points: number) => void }) {
+  const [phase, setPhase] = useState<'READY' | 'VIEWING' | 'ANSWERING'>(isSolved ? 'ANSWERING' : 'READY');
+  const [timeLeft, setTimeLeft] = useState(10);
+  const [answer, setAnswer] = useState('');
+  const [status, setStatus] = useState<'idle' | 'checking' | 'correct' | 'incorrect'>(isSolved ? 'correct' : 'idle');
+
+  useEffect(() => {
+    if (phase === 'VIEWING' && timeLeft > 0) {
+      const timer = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (phase === 'VIEWING' && timeLeft === 0) {
+      setPhase('ANSWERING');
+    }
+  }, [phase, timeLeft]);
+
+  const startViewing = () => {
+    setPhase('VIEWING');
+    setTimeLeft(10);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isSolved) return;
+
+    setStatus('checking');
+    setTimeout(() => {
+      if (answer.trim().toUpperCase() === puzzle.answer.toUpperCase()) {
+        setStatus('correct');
+        onSolved(puzzle.points);
+      } else {
+        setStatus('incorrect');
+        setTimeout(() => setStatus('idle'), 2000);
+      }
+    }, 800);
+  };
+
+  return (
+    <div className="bg-[#050505] border border-white/10 rounded-2xl p-6 md:p-8 relative shadow-inner">
+      <div className="flex justify-between items-center mb-6">
+        <span className="text-[10px] text-[#a3a3a3] font-bold tracking-widest font-mono uppercase">INTELLIGENCE DEBRIEF</span>
+        <div className="flex items-center gap-2 bg-[#3b82f6]/10 px-3 py-1.5 rounded-md border border-[#3b82f6]/30">
+          <span className="text-[9px] text-[#3b82f6] font-bold tracking-widest font-mono">
+            {phase === 'READY' ? 'READY' : phase === 'VIEWING' ? 'RECORDING' : 'ANALYSIS'}
+          </span>
+          <Activity className={`w-3 h-3 text-[#3b82f6] ${phase === 'VIEWING' ? 'animate-pulse text-[#ef4444]' : ''}`} />
+        </div>
+      </div>
+
+      <AnimatePresence mode="wait">
+        {phase === 'READY' && !isSolved && (
+          <motion.div key="ready" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center py-8">
+            <ScanLine className="w-16 h-16 text-[#3b82f6] mx-auto mb-6 opacity-50" />
+            <p className="text-white mb-6">You will have exactly 10 seconds to memorize the suspect profile. Once the time is up, the data will be permanently wiped from your terminal.</p>
+            <button
+              onClick={startViewing}
+              className="px-8 py-4 bg-gradient-to-r from-[#2563eb] to-[#3b82f6] hover:from-[#1d4ed8] hover:to-[#2563eb] text-white rounded-xl font-bold tracking-widest text-xs flex items-center justify-center gap-3 mx-auto shadow-[0_4px_20px_rgba(59,130,246,0.4)] transition-all font-mono"
+            >
+              <Eye className="w-5 h-5" /> INITIATE DEBRIEF
+            </button>
+          </motion.div>
+        )}
+
+        {phase === 'VIEWING' && !isSolved && (
+          <motion.div key="viewing" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="text-center">
+            <div className="flex justify-center items-center gap-4 mb-6">
+              <Timer className="w-6 h-6 text-[#ef4444] animate-pulse" />
+              <span className="text-3xl font-black text-[#ef4444] font-mono tracking-widest">00:{timeLeft.toString().padStart(2, '0')}</span>
+            </div>
+            <div className="bg-[#111] border border-white/20 rounded-xl p-8 shadow-inner relative overflow-hidden">
+              {/* Scanline effect */}
+              <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.25)_50%)] bg-[length:100%_4px] pointer-events-none z-10 opacity-20"></div>
+
+              <pre className="text-[#10b981] font-mono text-left whitespace-pre-wrap text-lg md:text-xl leading-relaxed relative z-20">
+                {puzzle.observationData}
+              </pre>
+            </div>
+          </motion.div>
+        )}
+
+        {(phase === 'ANSWERING' || isSolved) && (
+          <motion.div key="answering" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+            {!isSolved && (
+               <div className="bg-[#ef4444]/10 border border-[#ef4444]/30 text-[#ef4444] px-4 py-3 rounded-xl flex items-center justify-center gap-3 mb-8">
+                 <AlertTriangle className="w-5 h-5" />
+                 <span className="text-xs font-bold tracking-widest font-mono uppercase">DATA PURGED FROM LOCAL MEMORY</span>
+               </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={isSolved ? puzzle.answer : answer}
+                  onChange={(e) => setAnswer(e.target.value)}
+                  disabled={isSolved || status === 'checking'}
+                  className={`w-full bg-[#111] border-2 ${status === 'incorrect' ? 'border-[#ef4444] text-[#ef4444]' : status === 'correct' ? 'border-[#10b981] text-[#10b981]' : 'border-white/10 focus:border-[#3b82f6] text-white'} rounded-xl p-5 text-center text-xl md:text-2xl font-bold tracking-[0.2em] focus:outline-none focus:ring-4 focus:ring-[#3b82f6]/20 transition-all disabled:opacity-50 font-mono shadow-inner`}
+                  placeholder={isSolved ? "" : "TYPE ANSWER HERE..."}
+                />
+                {status === 'incorrect' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute -bottom-8 left-0 right-0 text-center text-[10px] text-[#ef4444] tracking-widest font-bold font-mono uppercase"
+                  >
+                    INCORRECT INTELLIGENCE. RE-EVALUATE!
+                  </motion.div>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSolved || status === 'checking' || !answer.trim()}
+                className={`w-full py-4 rounded-xl font-bold tracking-widest text-xs flex items-center justify-center gap-3 transition-all font-mono ${
+                  isSolved
+                    ? 'bg-[#10b981]/10 text-[#10b981] border border-[#10b981]/30 cursor-default'
+                    : status === 'checking'
+                      ? 'bg-[#3b82f6]/30 text-white cursor-wait border border-[#3b82f6]/50'
+                      : 'bg-gradient-to-r from-[#2563eb] to-[#3b82f6] hover:from-[#1d4ed8] hover:to-[#2563eb] text-white shadow-[0_4px_20px_rgba(59,130,246,0.4)] hover:shadow-[0_4px_25px_rgba(59,130,246,0.6)]'
+                }`}
+              >
+                {isSolved ? (
+                  <><CheckCircle2 className="w-5 h-5" /> REPORT FILED</>
+                ) : status === 'checking' ? (
+                  <><RefreshCw className="w-5 h-5 animate-spin" /> VERIFYING...</>
+                ) : (
+                  <><Shield className="w-5 h-5" /> FILE REPORT</>
+                )}
+              </button>
+            </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 function HintButton({ hint }: { hint: string }) {
   const [show, setShow] = useState(false);
 
@@ -665,6 +881,12 @@ function HintButton({ hint }: { hint: string }) {
 function PuzzleSolver({ puzzle, isSolved, onSolved }: { puzzle: Puzzle, isSolved: boolean, onSolved: (points: number) => void }) {
   if (puzzle.type === 'MASTERMIND') {
     return <MastermindSolver puzzle={puzzle} isSolved={isSolved} onSolved={onSolved} />;
+  }
+  if (puzzle.type === 'EMOJI_CRYPTO') {
+    return <EmojiCryptoSolver puzzle={puzzle} isSolved={isSolved} onSolved={onSolved} />;
+  }
+  if (puzzle.type === 'OBSERVATION') {
+    return <ObservationSolver puzzle={puzzle} isSolved={isSolved} onSolved={onSolved} />;
   }
 
   const [answer, setAnswer] = useState('');
