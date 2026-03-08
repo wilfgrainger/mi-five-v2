@@ -26,6 +26,29 @@ jobs:
       - name: Build frontend
         run: npm run build
 
+      - name: Ensure D1 Database Exists
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.MI_FIVE }}
+        run: |
+          npx wrangler d1 create mi-five-v2-db || true
+
+      - name: Setup D1 Binding in wrangler.toml
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.MI_FIVE }}
+        run: |
+          DB_ID=$(npx wrangler d1 info mi-five-v2-db --json | jq -r '.uuid')
+          echo "" >> wrangler.toml
+          echo "[[d1_databases]]" >> wrangler.toml
+          echo "binding = \"DB\"" >> wrangler.toml
+          echo "database_name = \"mi-five-v2-db\"" >> wrangler.toml
+          echo "database_id = \"$DB_ID\"" >> wrangler.toml
+
+      - name: Initialize D1 Schema
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.MI_FIVE }}
+        run: |
+          npx wrangler d1 execute mi-five-v2-db --remote --file=schema.sql || true
+
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
