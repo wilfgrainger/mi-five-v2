@@ -1,4 +1,4 @@
-export type Category = 'ALL_DATA_FILES' | 'COLD_WAR' | 'CYBER_SECURITY' | 'GCHQ_CLASSIC' | 'SIGNAL_INT' | 'LOGIC_OPS' | 'GEOLOCATION';
+export type Category = 'ALL_DATA_FILES' | 'COLD_WAR' | 'CYBER_SECURITY' | 'GCHQ_CLASSIC' | 'SIGNAL_INT' | 'LOGIC_OPS' | 'GEOLOCATION' | 'IMAGE_INT';
 
 export interface Puzzle {
   id: string;
@@ -9,9 +9,165 @@ export interface Puzzle {
   points: number;
   answer: string;
   hint: string;
+  imageUrl?: string;
+  type?: 'STANDARD' | 'MASTERMIND';
 }
 
 export const puzzles: Puzzle[] = [
+  {
+    "id": "0X_GCHQ_X1",
+    "title": "THE DIRECTOR'S CROSSWORD",
+    "description": "Analyze the attached crossword grid. The central vertical column spells out a 14-letter word. Clue 3 is 'Government _______ Headquarters (14)'. What is the missing word?",
+    "category": "GCHQ_CLASSIC",
+    "difficulty": "EASY",
+    "points": 50,
+    "answer": "COMMUNICATIONS",
+    "hint": "What does the 'C' in GCHQ stand for?",
+    "imageUrl": "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&q=80&w=1000"
+  },
+  {
+    "id": "0X_GCHQ_X2",
+    "title": "CHRISTMAS CHALLENGE: PALs",
+    "description": "Hint 1 from the GCHQ Christmas Challenge states: 'Maybe one of your PALs can help you with the fourth picture.' What encoding system is commonly associated with the acronym PAL in the context of television?",
+    "category": "SIGNAL_INT",
+    "difficulty": "MEDIUM",
+    "points": 75,
+    "answer": "PHASE ALTERNATING LINE",
+    "hint": "It's an analogue television colour encoding system.",
+    "imageUrl": "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&q=80&w=1000"
+  },
+  {
+    "id": "0X_GCHQ_X3",
+    "title": "THE ENIGMA MACHINE",
+    "description": "During WWII, GCHQ operations were based at a specific location, as referenced in clue 4: 'Our WW2 operations were based here (9,4)'. What is the name of this location?",
+    "category": "COLD_WAR",
+    "difficulty": "EASY",
+    "points": 50,
+    "answer": "BLETCHLEY PARK",
+    "hint": "It's an estate in Milton Keynes, Buckinghamshire.",
+    "imageUrl": "https://images.unsplash.com/photo-1605648916361-9bc12ad6a569?auto=format&fit=crop&q=80&w=1000"
+  },
+  {
+    "id": "0X_GCHQ_X4",
+    "title": "THE INSECT COLONY",
+    "description": "Hint 5 from the GCHQ Christmas Challenge asks: 'What sort of insects live in colonies? Was not knowing that the CAUSE of you needing a hint for this puzzle?' What insect is it referring to?",
+    "category": "LOGIC_OPS",
+    "difficulty": "EASY",
+    "points": 50,
+    "answer": "ANTS",
+    "hint": "Think of small, hardworking insects.",
+    "imageUrl": "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&q=80&w=1000"
+  },
+  {
+    "id": "0X_GCHQ_X5",
+    "title": "THE ROAD SAFETY CODE",
+    "description": "Hint 2 from the GCHQ Christmas Challenge asks: 'What Code do you follow to Cross the road safely? Which show features a panther?' What is the name of the code?",
+    "category": "GCHQ_CLASSIC",
+    "difficulty": "EASY",
+    "points": 50,
+    "answer": "GREEN CROSS CODE",
+    "hint": "It's a famous UK road safety campaign.",
+    "imageUrl": "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&q=80&w=1000"
+  },
+  {
+    "id": "0X_GCHQ_X6",
+    "title": "THE CIPHER MESSAGE",
+    "description": "Hint 7 from the GCHQ Christmas Challenge states: 'The first two words in are PERHAPS READING. Use this to work out which letters represent A, D, E, G, H, I, N, P, R and S. These will help you find out how the MESSAGE is CIPHERED.' If 'P' is represented by 'X', and 'E' by 'Y', what might 'PE' be?",
+    "category": "CYBER_SECURITY",
+    "difficulty": "HARD",
+    "points": 100,
+    "answer": "XY",
+    "hint": "It's a simple substitution cipher.",
+    "imageUrl": "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&q=80&w=1000"
+  },
+  {
+    "id": "0X_IMG_1",
+    "title": "THE HIDDEN MESSAGE",
+    "description": "Analyze the attached image. There is a hidden message in the noise. What does it say?",
+    "category": "IMAGE_INT",
+    "difficulty": "MEDIUM",
+    "points": 75,
+    "answer": "ENIGMA",
+    "hint": "Look closely at the contrast.",
+    "imageUrl": "https://images.unsplash.com/photo-1614064641913-a53b946f7137?auto=format&fit=crop&q=80&w=1000"
+  },
+  {
+    "id": "0X_IMG_2",
+    "title": "SATELLITE RECONNAISSANCE",
+    "description": "Identify the famous landmark in this satellite imagery.",
+    "category": "IMAGE_INT",
+    "difficulty": "EASY",
+    "points": 50,
+    "answer": "EIFFEL TOWER",
+    "hint": "It's located in Paris, France.",
+    "imageUrl": "https://images.unsplash.com/photo-1543305113-82b52b21703e?auto=format&fit=crop&q=80&w=1000"
+  },
+  {
+    "id": "0X_IMG_3",
+    "title": "STEGANOGRAPHY CHALLENGE",
+    "description": "The attached image contains a hidden file. What is the name of the file?",
+    "category": "IMAGE_INT",
+    "difficulty": "HARD",
+    "points": 100,
+    "answer": "SECRET.TXT",
+    "hint": "Think about common file extensions.",
+    "imageUrl": "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&q=80&w=1000"
+  },
+  {
+    "id": "0X_CIPHER_1",
+    "title": "THE VIGENÈRE INTERCEPT",
+    "description": "We've intercepted a message encrypted with a Vigenère cipher. The ciphertext is 'LXFOPVEFRNHR'. We believe the keyword is 'LEMON'. Decrypt the message.",
+    "category": "CYBER_SECURITY",
+    "difficulty": "HARD",
+    "points": 100,
+    "answer": "ATTACKATDAWN",
+    "hint": "Use a Vigenère square or an online decoder with the keyword 'LEMON'.",
+    "imageUrl": "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&q=80&w=1000"
+  },
+  {
+    "id": "0X_CIPHER_2",
+    "title": "THE PLAYFAIR SQUARE",
+    "description": "Decrypt the following Playfair cipher text: 'BMODZBXDNABK'. The keyword used to generate the 5x5 grid (omitting 'J') is 'MONARCHY'.",
+    "category": "CYBER_SECURITY",
+    "difficulty": "ELITE",
+    "points": 200,
+    "answer": "BALLOON",
+    "hint": "Construct the 5x5 grid starting with 'MONARCHY' followed by the remaining alphabet. Remember Playfair rules for pairs.",
+    "imageUrl": "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&q=80&w=1000"
+  },
+  {
+    "id": "0X_MM_1",
+    "title": "THE VAULT CODE",
+    "description": "Crack the 4-digit vault code. You have limited attempts. Green means correct digit and position. Yellow means correct digit, wrong position. Gray means digit not in code. (Note: The answer is 4 digits, e.g., 7392).",
+    "category": "LOGIC_OPS",
+    "difficulty": "HARD",
+    "points": 150,
+    "answer": "7392",
+    "hint": "Use logic to eliminate digits and find the correct positions.",
+    "type": "MASTERMIND"
+  },
+  {
+    "id": "0X_GEO_1",
+    "title": "THE DROP POINT",
+    "description": "Agent K left a package at 51.5007° N, 0.1246° W. What is the name of the tower at this location?",
+    "category": "GEOLOCATION",
+    "difficulty": "EASY",
+    "points": 50,
+    "answer": "BIG BEN",
+    "hint": "It's a very famous clock tower in London.",
+    "imageUrl": "https://images.unsplash.com/photo-1520986606214-8b456906c813?auto=format&fit=crop&q=80&w=1000"
+  },
+  {
+    "id": "0X_GEO_2",
+    "title": "THE SAFE HOUSE",
+    "description": "We traced a signal to 38.8977° N, 77.0365° W. Who lives at this address?",
+    "category": "GEOLOCATION",
+    "difficulty": "MEDIUM",
+    "points": 75,
+    "answer": "THE PRESIDENT",
+    "hint": "It's the coordinates of the White House.",
+    "imageUrl": "https://images.unsplash.com/photo-1581553680321-4fffae59fdda?auto=format&fit=crop&q=80&w=1000"
+  },
   {
     "id": "0X_ELITE_1",
     "title": "THE LETTER COUNT",
