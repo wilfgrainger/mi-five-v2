@@ -32,8 +32,8 @@ export default function Tutorial({ onComplete }: TutorialProps) {
             <Shield className="w-6 h-6 text-[#3b82f6]" />
           </div>
           <div>
-            <h1 className="text-sm font-bold tracking-widest text-white font-sans">ORIENTATION_PROTOCOL</h1>
-            <p className="text-[10px] text-[#3b82f6] tracking-widest mt-0.5 font-mono uppercase">Mission_00 // Thames_House</p>
+            <h1 className="text-sm font-bold tracking-widest text-white font-sans uppercase">HOW TO PLAY</h1>
+            <p className="text-[10px] text-[#3b82f6] tracking-widest mt-0.5 font-mono uppercase">Mission 0 // The Academy</p>
           </div>
         </div>
         <button onClick={skipTutorial} className="text-[10px] text-[#a3a3a3] hover:text-white font-mono tracking-widest border border-white/10 px-3 py-1.5 rounded-md hover:bg-white/5 transition-colors">
@@ -71,13 +71,13 @@ function Module1({ onComplete, subStep, setSubStep }: any) {
             >
               <Shield className="w-12 h-12 text-[#3b82f6]" />
             </div>
-            <p className="text-sm text-[#a3a3a3] font-mono tracking-widest">TAP TO INITIATE UPLINK</p>
+            <p className="text-sm text-[#a3a3a3] font-mono tracking-widest uppercase">Tap to start</p>
           </motion.div>
         )}
         {subStep === 1 && (
           <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="text-center">
             <CheckCircle2 className="w-16 h-16 text-[#10b981] mx-auto mb-6" />
-            <h2 className="text-2xl font-bold text-white mb-2 tracking-widest">UPLINK ESTABLISHED</h2>
+            <h2 className="text-2xl font-bold text-white mb-2 tracking-widest">CONNECTED</h2>
             <p className="text-sm text-[#10b981] font-mono tracking-widest mb-8">SECURE CHANNEL ACTIVE</p>
             <button onClick={() => setSubStep(2)} className="px-6 py-3 bg-[#3b82f6] text-white rounded-xl font-bold tracking-widest text-xs">CONTINUE</button>
           </motion.div>
@@ -85,7 +85,7 @@ function Module1({ onComplete, subStep, setSubStep }: any) {
         {subStep === 2 && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md text-center">
             <div className="bg-[#111] border border-white/10 rounded-2xl p-6 mb-8">
-              <p className="text-lg text-white mb-4">"Welcome to Thames House, Rookie. I'm your Handler. Your first test is simple: find your way around. Tap the Dossier icon to open your active file."</p>
+              <p className="text-lg text-white mb-4">"Welcome to the Academy, Rookie. I'm your teacher. Your first test is simple: find your way around. Tap the Missions icon to open your first task."</p>
             </div>
           </motion.div>
         )}
@@ -93,10 +93,10 @@ function Module1({ onComplete, subStep, setSubStep }: any) {
 
       {/* Mock Navigation Bar */}
       <div className="bg-[#0a0a0a] border-t border-white/10 p-4 pb-safe flex justify-around items-center relative">
-        <NavIcon icon={<Briefcase />} label="DOSSIER" active={subStep === 2} onClick={() => subStep === 2 && onComplete()} />
+        <NavIcon icon={<Briefcase />} label="MISSIONS" active={subStep === 2} onClick={() => subStep === 2 && onComplete()} />
         <NavIcon icon={<Map />} label="MAP" />
         <NavIcon icon={<MessageSquare />} label="COMMS" />
-        <NavIcon icon={<ScanLine />} label="Q-BRANCH" />
+        <NavIcon icon={<ScanLine />} label="GADGET LAB" />
       </div>
     </motion.div>
   );
@@ -119,7 +119,7 @@ function Module2({ onComplete, subStep, setSubStep }: any) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col">
       <div className="p-6 bg-[#111] border-b border-white/10">
-        <p className="text-sm text-white">"Observation is your primary weapon. We have eyes on a suspected dead drop. Tap the anomaly."</p>
+        <p className="text-sm text-white">"Looking closely is your best skill. We are watching a secret drop-off. Tap the strange object."</p>
       </div>
       <div className="flex-1 relative bg-black overflow-hidden flex items-center justify-center">
         {/* Mock Surveillance Image */}
@@ -156,7 +156,7 @@ function Module3({ onComplete, subStep, setSubStep }: any) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col p-6">
       <div className="bg-[#111] border border-white/10 rounded-2xl p-6 mb-8">
-        <p className="text-sm text-white mb-4">"Signals intercepted a basic shift cipher. Align 'A' with 'D' (Shift +3). Decrypt the intercept: 'KHOOR'."</p>
+        <p className="text-sm text-white mb-4">"We found a secret code. Each letter is moved 3 places forward (A becomes D). Can you solve this code: 'KHOOR'?"</p>
         <div className="bg-black p-4 rounded-xl text-center border border-white/5">
           <p className="text-2xl font-mono tracking-[0.5em] text-[#3b82f6]">KHOOR</p>
         </div>
@@ -199,7 +199,7 @@ function Module4({ onComplete, subStep, setSubStep }: any) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col p-6">
       <div className="bg-[#111] border border-white/10 rounded-2xl p-6 mb-8">
-        <p className="text-sm text-white">"Q-Branch suspects a microdot on this postcard. Tap the UV Scanner to reveal hidden ink."</p>
+        <p className="text-sm text-white">"We think there is a hidden message on this postcard. Use the UV Light to find the secret ink."</p>
       </div>
 
       <div className="flex-1 relative flex items-center justify-center">
@@ -247,15 +247,15 @@ function Module5({ onComplete, subStep, setSubStep }: any) {
       <div className="w-24 h-24 bg-[#10b981]/20 rounded-full flex items-center justify-center mb-8 border border-[#10b981]/50 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
         <Shield className="w-12 h-12 text-[#10b981]" />
       </div>
-      <h2 className="text-3xl font-bold text-white mb-4 tracking-widest">ORIENTATION COMPLETE</h2>
+      <h2 className="text-3xl font-bold text-white mb-4 tracking-widest uppercase">TRAINING COMPLETE</h2>
       <p className="text-[#a3a3a3] mb-12 max-w-md leading-relaxed">
-        "You've mastered the basics, Rookie. The real work begins now. Remember: trust no one, verify everything, and protect the realm."
+        "You've learned the basics, Rookie. The real missions start now. Remember: stay sharp, check everything, and have fun."
       </p>
       <button 
         onClick={onComplete}
         className="w-full max-w-xs py-4 bg-gradient-to-r from-[#10b981] to-[#059669] text-white rounded-xl font-bold tracking-widest text-xs shadow-[0_0_20px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2"
       >
-        ENTER THAMES HOUSE <ArrowRight className="w-4 h-4" />
+        START YOUR MISSIONS <ArrowRight className="w-4 h-4" />
       </button>
     </motion.div>
   );

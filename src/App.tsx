@@ -46,6 +46,8 @@ export default function App() {
   const [view, setView] = useState<'dashboard' | 'puzzle'>('dashboard');
   const [activePuzzle, setActivePuzzle] = useState<Puzzle | null>(null);
   const [activeCategory, setActiveCategory] = useState<Category | 'ALL_DATA_FILES'>('ALL_DATA_FILES');
+  const [gameMode, setGameMode] = useState<'TRAINING' | 'CHALLENGE'>('TRAINING');
+  const [sortBy, setSortBy] = useState<'DIFFICULTY' | 'POINTS' | 'TITLE' | 'STATUS'>('DIFFICULTY');
   const [showBot, setShowBot] = useState(false);
   const [visibleCount, setVisibleCount] = useState(12);
 
@@ -131,8 +133,23 @@ export default function App() {
     : puzzles.filter(p => p.category === activeCategory);
 
   const sortedPuzzles = [...filteredPuzzles].sort((a, b) => {
-    const diffOrder = { 'EASY': 1, 'MEDIUM': 2, 'HARD': 3, 'ELITE': 4 };
-    return diffOrder[a.difficulty] - diffOrder[b.difficulty];
+    if (sortBy === 'DIFFICULTY') {
+      const diffOrder = { 'EASY': 1, 'MEDIUM': 2, 'HARD': 3, 'ELITE': 4 };
+      return diffOrder[a.difficulty] - diffOrder[b.difficulty];
+    }
+    if (sortBy === 'POINTS') {
+      return b.points - a.points;
+    }
+    if (sortBy === 'TITLE') {
+      return a.title.localeCompare(b.title);
+    }
+    if (sortBy === 'STATUS') {
+      const aSolved = user?.solvedPuzzles.includes(a.id);
+      const bSolved = user?.solvedPuzzles.includes(b.id);
+      if (aSolved === bSolved) return 0;
+      return aSolved ? 1 : -1;
+    }
+    return 0;
   });
 
   const visiblePuzzles = sortedPuzzles.slice(0, visibleCount);
@@ -153,8 +170,8 @@ export default function App() {
             <Shield className="w-5 h-5 md:w-6 md:h-6 text-[#3b82f6]" />
           </div>
           <div>
-            <h1 className="text-[10px] md:text-sm font-bold tracking-widest text-white font-sans uppercase">INTELLIGENCE_AUTHORITY</h1>
-            <p className="text-[8px] md:text-[10px] text-[#3b82f6] tracking-widest mt-0.5 font-mono uppercase">Node_01 // Secure_Tunnel</p>
+            <h1 className="text-[10px] md:text-sm font-bold tracking-widest text-white font-sans uppercase">SPY ACADEMY</h1>
+            <p className="text-[8px] md:text-[10px] text-[#3b82f6] tracking-widest mt-0.5 font-mono uppercase">Training Center // Level 1</p>
           </div>
         </div>
         
@@ -181,13 +198,13 @@ export default function App() {
             className={`flex-1 px-4 py-2 text-xs font-bold tracking-widest rounded-lg transition-all font-mono ${view === 'dashboard' ? 'bg-[#3b82f6]/20 text-[#3b82f6] shadow-sm' : 'text-[#a3a3a3] hover:text-white hover:bg-white/5'}`}
             onClick={() => { setView('dashboard'); setActivePuzzle(null); }}
           >
-            01_ OPERATIONAL_FILES
+            01_ MISSIONS
           </button>
           <button 
             className="flex-1 px-4 py-2 text-xs font-bold tracking-widest rounded-lg text-[#a3a3a3] hover:text-white hover:bg-white/5 transition-all font-mono"
             onClick={() => setShowBot(!showBot)}
           >
-            02_ Q_BRANCH_UPLINK
+            02_ HELP BOT
           </button>
         </div>
       </div>
@@ -217,19 +234,19 @@ export default function App() {
                 
                 <div className="flex-1 grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-6 w-full z-10">
                   <div>
-                    <p className="text-[8px] md:text-[10px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">OPERATIVE_ID</p>
+                    <p className="text-[8px] md:text-[10px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">AGENT NAME</p>
                     <p className="text-sm md:text-xl font-bold tracking-widest text-white truncate">{user.username}</p>
                   </div>
                   <div>
-                    <p className="text-[8px] md:text-[10px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">CLEARANCE</p>
+                    <p className="text-[8px] md:text-[10px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">RANK</p>
                     <p className="text-sm md:text-xl font-bold tracking-widest text-[#3b82f6]">{user.rank}</p>
                   </div>
                   <div>
-                    <p className="text-[8px] md:text-[10px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">SPECIALIZATION</p>
+                    <p className="text-[8px] md:text-[10px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">SKILL</p>
                     <p className="text-[10px] md:text-sm font-bold tracking-widest text-[#d4d4d4] uppercase">{user.specialization?.replace('_', ' ') || 'UNASSIGNED'}</p>
                   </div>
                   <div>
-                    <p className="text-[8px] md:text-[10px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">INTEL_YIELD</p>
+                    <p className="text-[8px] md:text-[10px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">TOTAL SCORE</p>
                     <p className="text-sm md:text-xl font-bold tracking-widest text-[#10b981]">{user.score}</p>
                   </div>
                 </div>
@@ -239,34 +256,83 @@ export default function App() {
                     onClick={handleShare}
                     className="w-full md:w-auto flex items-center justify-center gap-2 px-5 py-3 bg-[#3b82f6]/10 hover:bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/30 rounded-xl transition-colors text-[10px] font-bold tracking-widest font-mono"
                   >
-                    <Share2 className="w-4 h-4" /> SHARE_DOSSIER
+                    <Share2 className="w-4 h-4" /> SHARE PROGRESS
                   </button>
                 </div>
               </div>
 
-              {/* Filters */}
-              <div>
-                <div className="flex items-center gap-4 mb-4">
-                  <p className="text-[10px] text-[#3b82f6] tracking-widest uppercase font-mono">OPERATIONAL_THEATRE_REGISTRY</p>
-                  <div className="h-[1px] flex-1 bg-white/5"></div>
-                </div>
-                
-                <div className="flex flex-wrap gap-3">
-                  <button
-                    onClick={() => setActiveCategory('ALL_DATA_FILES')}
-                    className={`px-4 py-2 text-[10px] font-bold tracking-widest rounded-lg border transition-all font-mono ${activeCategory === 'ALL_DATA_FILES' ? 'bg-[#3b82f6]/20 text-[#3b82f6] border-[#3b82f6]/50 shadow-[0_0_10px_rgba(59,130,246,0.1)]' : 'bg-[#111] text-[#a3a3a3] border-white/5 hover:border-white/20 hover:text-white'}`}
-                  >
-                    [ ALL_DATA_FILES // {puzzles.length} ]
-                  </button>
-                  {Object.entries(categoryCounts).map(([cat, count]) => (
+              {/* Game Mode, Filters & Sorting */}
+              <div className="space-y-6">
+                <div>
+                  <div className="flex items-center gap-4 mb-4">
+                    <p className="text-[10px] text-[#3b82f6] tracking-widest uppercase font-mono">GAME MODE</p>
+                    <div className="h-[1px] flex-1 bg-white/5"></div>
+                  </div>
+                  <div className="flex gap-3">
                     <button
-                      key={cat}
-                      onClick={() => setActiveCategory(cat as Category)}
-                      className={`px-4 py-2 text-[10px] font-bold tracking-widest rounded-lg border transition-all font-mono ${activeCategory === cat ? 'bg-[#3b82f6]/20 text-[#3b82f6] border-[#3b82f6]/50 shadow-[0_0_10px_rgba(59,130,246,0.1)]' : 'bg-[#111] text-[#a3a3a3] border-white/5 hover:border-white/20 hover:text-white'}`}
+                      onClick={() => setGameMode('TRAINING')}
+                      className={`flex-1 px-4 py-3 rounded-xl border transition-all flex flex-col items-center gap-1 ${gameMode === 'TRAINING' ? 'bg-[#3b82f6]/20 border-[#3b82f6]/50 text-[#3b82f6]' : 'bg-[#111] border-white/5 text-[#a3a3a3]'}`}
                     >
-                      [ {cat} // {count} ]
+                      <span className="text-xs font-bold tracking-widest">TRAINING MODE</span>
+                      <span className="text-[8px] opacity-70">FREE HINTS • PRACTICE</span>
                     </button>
-                  ))}
+                    <button
+                      onClick={() => setGameMode('CHALLENGE')}
+                      className={`flex-1 px-4 py-3 rounded-xl border transition-all flex flex-col items-center gap-1 ${gameMode === 'CHALLENGE' ? 'bg-[#ef4444]/20 border-[#ef4444]/50 text-[#ef4444]' : 'bg-[#111] border-white/5 text-[#a3a3a3]'}`}
+                    >
+                      <span className="text-xs font-bold tracking-widest">CHALLENGE MODE</span>
+                      <span className="text-[8px] opacity-70">HIGH STAKES • NO HELP</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-4 mb-4">
+                    <p className="text-[10px] text-[#3b82f6] tracking-widest uppercase font-mono">CHOOSE YOUR MISSION</p>
+                    <div className="h-[1px] flex-1 bg-white/5"></div>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      onClick={() => setActiveCategory('ALL_DATA_FILES')}
+                      className={`px-4 py-2 text-[10px] font-bold tracking-widest rounded-lg border transition-all font-mono ${activeCategory === 'ALL_DATA_FILES' ? 'bg-[#3b82f6]/20 text-[#3b82f6] border-[#3b82f6]/50 shadow-[0_0_10px_rgba(59,130,246,0.1)]' : 'bg-[#111] text-[#a3a3a3] border-white/5 hover:border-white/20 hover:text-white'}`}
+                    >
+                      [ ALL MISSIONS // {puzzles.length} ]
+                    </button>
+                    {Object.entries(categoryCounts).map(([cat, count]) => (
+                      <button
+                        key={cat}
+                        onClick={() => setActiveCategory(cat as Category)}
+                        className={`px-4 py-2 text-[10px] font-bold tracking-widest rounded-lg border transition-all font-mono ${activeCategory === cat ? 'bg-[#3b82f6]/20 text-[#3b82f6] border-[#3b82f6]/50 shadow-[0_0_10px_rgba(59,130,246,0.1)]' : 'bg-[#111] text-[#a3a3a3] border-white/5 hover:border-white/20 hover:text-white'}`}
+                      >
+                        [ {cat.replace('_', ' ')} // {count} ]
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-4 mb-4">
+                    <p className="text-[10px] text-[#3b82f6] tracking-widest uppercase font-mono">SORT BY</p>
+                    <div className="h-[1px] flex-1 bg-white/5"></div>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-3">
+                    {[
+                      { id: 'DIFFICULTY', label: 'DIFFICULTY' },
+                      { id: 'POINTS', label: 'POINTS' },
+                      { id: 'TITLE', label: 'NAME' },
+                      { id: 'STATUS', label: 'SOLVED STATUS' }
+                    ].map((sort) => (
+                      <button
+                        key={sort.id}
+                        onClick={() => setSortBy(sort.id as any)}
+                        className={`px-4 py-2 text-[10px] font-bold tracking-widest rounded-lg border transition-all font-mono ${sortBy === sort.id ? 'bg-[#10b981]/20 text-[#10b981] border-[#10b981]/50 shadow-[0_0_10px_rgba(16,185,129,0.1)]' : 'bg-[#111] text-[#a3a3a3] border-white/5 hover:border-white/20 hover:text-white'}`}
+                      >
+                        {sort.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -305,7 +371,7 @@ export default function App() {
                         </div>
                         <div className="flex flex-col items-end gap-2">
                           <div className="text-right">
-                            <p className="text-[8px] text-[#a3a3a3] tracking-widest mb-1 font-mono">PRIORITY</p>
+                            <p className="text-[8px] text-[#a3a3a3] tracking-widest mb-1 font-mono">DIFFICULTY</p>
                             <span className={`text-[9px] font-bold tracking-widest px-2 py-1 rounded-md border ${difficultyColor} font-mono`}>
                               {puzzle.difficulty}
                             </span>
@@ -313,7 +379,7 @@ export default function App() {
                           {puzzle.imageUrl && (
                             <div className="flex items-center gap-1 text-[#3b82f6] bg-[#3b82f6]/10 px-2 py-1 rounded border border-[#3b82f6]/30" title="Contains Image Attachment">
                               <ImageIcon className="w-3 h-3" />
-                              <span className="text-[8px] font-bold tracking-widest font-mono">ATTACHMENT</span>
+                              <span className="text-[8px] font-bold tracking-widest font-mono">IMAGE</span>
                             </div>
                           )}
                         </div>
@@ -324,13 +390,13 @@ export default function App() {
 
                       <div className="flex justify-between items-end mt-auto pt-4 border-t border-white/5">
                         <div>
-                          <p className="text-[8px] text-[#a3a3a3] tracking-widest mb-1 font-mono">REGISTRY_ID</p>
+                          <p className="text-[8px] text-[#a3a3a3] tracking-widest mb-1 font-mono">MISSION ID</p>
                           <p className="text-[10px] text-[#d4d4d4] tracking-widest font-mono">{puzzle.id}</p>
                         </div>
                         <div 
                           className={`text-xs font-bold tracking-widest flex items-center gap-1 transition-colors font-mono ${isSolved ? 'text-[#10b981] group-hover:text-[#34d399]' : 'text-[#3b82f6] group-hover:text-[#60a5fa]'}`}
                         >
-                          {isSolved ? 'REVIEW' : 'DECRYPT'} <ChevronRight className="w-4 h-4" />
+                          {isSolved ? 'REVIEW' : 'SOLVE'} <ChevronRight className="w-4 h-4" />
                         </div>
                       </div>
                     </motion.div>
@@ -344,7 +410,7 @@ export default function App() {
                     onClick={() => setVisibleCount(prev => prev + 12)}
                     className="px-8 py-4 bg-[#111] border border-white/10 hover:border-[#3b82f6]/50 text-[#a3a3a3] hover:text-white rounded-2xl text-xs font-bold tracking-widest transition-all flex items-center gap-3 hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] font-mono"
                   >
-                    <RefreshCw className="w-4 h-4" /> DECRYPT_MORE_FILES
+                    <RefreshCw className="w-4 h-4" /> SHOW MORE MISSIONS
                   </button>
                 </div>
               )}
@@ -361,7 +427,7 @@ export default function App() {
                 onClick={() => setView('dashboard')}
                 className="flex items-center gap-2 text-[#a3a3a3] hover:text-white text-xs font-bold tracking-widest mb-8 transition-colors font-mono"
               >
-                <ArrowLeft className="w-4 h-4" /> DISENGAGE_REMOTE_UPLINK
+                <ArrowLeft className="w-4 h-4" /> BACK TO MISSIONS
               </button>
 
               <div className="bg-[#111] border border-white/10 rounded-3xl p-8 md:p-12 relative overflow-hidden shadow-2xl">
@@ -371,18 +437,18 @@ export default function App() {
                 <div className="flex justify-between items-center mb-8 border-b border-white/5 pb-6">
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 rounded-full bg-[#3b82f6] shadow-[0_0_10px_rgba(59,130,246,0.8)]"></div>
-                    <span className="text-[10px] text-[#a3a3a3] font-bold tracking-widest uppercase font-mono">ACTIVE_MISSION_REGISTRY <span className="mx-2">|</span> {activePuzzle.id}</span>
+                    <span className="text-[10px] text-[#a3a3a3] font-bold tracking-widest uppercase font-mono">MISSION ID <span className="mx-2">|</span> {activePuzzle.id}</span>
                   </div>
-                  <span className="text-[10px] text-[#ef4444] font-bold tracking-widest font-mono bg-[#ef4444]/10 px-3 py-1 rounded-full border border-[#ef4444]/20">[{activePuzzle.difficulty}_PRIORITY_LEVEL]</span>
+                  <span className="text-[10px] text-[#ef4444] font-bold tracking-widest font-mono bg-[#ef4444]/10 px-3 py-1 rounded-full border border-[#ef4444]/20">[{activePuzzle.difficulty} DIFFICULTY]</span>
                 </div>
 
                 <div className="flex flex-col md:flex-row justify-between items-start mb-10 gap-6">
                   <h2 className="text-3xl md:text-4xl font-black text-white font-sans tracking-tight">{activePuzzle.title}</h2>
-                  <HintButton hint={activePuzzle.hint} />
+                  {gameMode === 'TRAINING' && <HintButton hint={activePuzzle.hint} />}
                 </div>
 
                 <div className="border-l-4 border-[#3b82f6] pl-6 mb-12 bg-gradient-to-r from-[#3b82f6]/5 to-transparent py-4 rounded-r-2xl">
-                  <p className="text-xs text-[#3b82f6] font-bold tracking-widest mb-3 font-mono">{'>'} BRIEFING:</p>
+                  <p className="text-xs text-[#3b82f6] font-bold tracking-widest mb-3 font-mono">{'>'} MISSION BRIEF:</p>
                   <p className="text-lg text-[#d4d4d4] font-sans leading-relaxed">{activePuzzle.description}</p>
                   {activePuzzle.imageUrl && (
                     <div className="mt-6 rounded-xl overflow-hidden border border-white/10 shadow-lg">
@@ -425,7 +491,7 @@ export default function App() {
           className={`flex flex-col items-center gap-1 transition-all ${view === 'dashboard' ? 'text-[#3b82f6]' : 'text-[#555]'}`}
         >
           <Briefcase className="w-6 h-6" />
-          <span className="text-[9px] font-bold tracking-widest font-mono">FILES</span>
+          <span className="text-[9px] font-bold tracking-widest font-mono">MISSIONS</span>
         </button>
         <button 
           className="flex flex-col items-center gap-1 text-[#555] opacity-50 cursor-not-allowed"
@@ -444,7 +510,7 @@ export default function App() {
           className={`flex flex-col items-center gap-1 transition-all ${showBot ? 'text-[#3b82f6]' : 'text-[#555]'}`}
         >
           <ScanLine className="w-6 h-6" />
-          <span className="text-[9px] font-bold tracking-widest font-mono">Q-BRANCH</span>
+          <span className="text-[9px] font-bold tracking-widest font-mono">HELP BOT</span>
         </button>
       </div>
 
@@ -510,7 +576,7 @@ function PuzzleSolver({ puzzle, isSolved, onSolved }: { puzzle: Puzzle, isSolved
   return (
     <div className="bg-[#050505] border border-white/10 rounded-2xl p-6 md:p-8 relative shadow-inner">
       <div className="flex justify-between items-center mb-6">
-        <span className="text-[10px] text-[#a3a3a3] font-bold tracking-widest font-mono">DECRYPTION_COMMAND_INPUT</span>
+        <span className="text-[10px] text-[#a3a3a3] font-bold tracking-widest font-mono uppercase">ENTER YOUR ANSWER</span>
         <div className="flex items-center gap-2 bg-[#3b82f6]/10 px-3 py-1.5 rounded-md border border-[#3b82f6]/30">
           <span className="text-[9px] text-[#3b82f6] font-bold tracking-widest font-mono">READY</span>
           <Cpu className="w-3 h-3 text-[#3b82f6]" />
@@ -525,15 +591,15 @@ function PuzzleSolver({ puzzle, isSolved, onSolved }: { puzzle: Puzzle, isSolved
             onChange={(e) => setAnswer(e.target.value)}
             disabled={isSolved || status === 'checking'}
             className={`w-full bg-[#111] border-2 ${status === 'incorrect' ? 'border-[#ef4444] text-[#ef4444]' : status === 'correct' ? 'border-[#10b981] text-[#10b981]' : 'border-white/10 focus:border-[#3b82f6] text-white'} rounded-xl p-5 text-center text-xl md:text-2xl font-bold tracking-[0.2em] focus:outline-none focus:ring-4 focus:ring-[#3b82f6]/20 transition-all disabled:opacity-50 font-mono shadow-inner`}
-            placeholder={isSolved ? "" : ". . ."}
+            placeholder={isSolved ? "" : "TYPE HERE..."}
           />
           {status === 'incorrect' && (
             <motion.div 
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="absolute -bottom-8 left-0 right-0 text-center text-[10px] text-[#ef4444] tracking-widest font-bold font-mono"
+              className="absolute -bottom-8 left-0 right-0 text-center text-[10px] text-[#ef4444] tracking-widest font-bold font-mono uppercase"
             >
-              ACCESS DENIED. INVALID DECRYPTION KEY.
+              INCORRECT ANSWER. TRY AGAIN!
             </motion.div>
           )}
         </div>
@@ -550,11 +616,11 @@ function PuzzleSolver({ puzzle, isSolved, onSolved }: { puzzle: Puzzle, isSolved
           }`}
         >
           {isSolved ? (
-            <><CheckCircle2 className="w-5 h-5" /> DECRYPTION_SUCCESSFUL</>
+            <><CheckCircle2 className="w-5 h-5" /> MISSION COMPLETE</>
           ) : status === 'checking' ? (
-            <><RefreshCw className="w-5 h-5 animate-spin" /> PROCESSING_OVERRIDE...</>
+            <><RefreshCw className="w-5 h-5 animate-spin" /> CHECKING...</>
           ) : (
-            <><Shield className="w-5 h-5" /> EXECUTE_OVERRIDE</>
+            <><Shield className="w-5 h-5" /> CHECK ANSWER</>
           )}
         </button>
       </form>
@@ -601,15 +667,15 @@ function Onboarding({ onLogin }: { onLogin: (username: string, ageGroup: string,
             </div>
             
             <div className="text-center mb-10">
-              <h1 className="text-2xl font-bold tracking-widest mb-2 text-white font-sans">INTELLIGENCE_AUTHORITY</h1>
-              <p className="text-[10px] text-[#3b82f6] tracking-widest font-mono uppercase">Secure Terminal Login // Node_01</p>
+              <h1 className="text-2xl font-bold tracking-widest mb-2 text-white font-sans uppercase">SPY ACADEMY</h1>
+              <p className="text-[10px] text-[#3b82f6] tracking-widest font-mono uppercase">New Agent Sign-up // Level 1</p>
             </div>
 
             <form onSubmit={handleNext} className="space-y-6">
               <AnimatePresence mode="wait">
                 {step === 1 && (
                   <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                    <label className="block text-xs text-[#a3a3a3] font-medium tracking-wide mb-3">OPERATIVE IDENTIFIER</label>
+                    <label className="block text-xs text-[#a3a3a3] font-medium tracking-wide mb-3 uppercase">Choose Your Agent Name</label>
                     <input 
                       type="text" 
                       required
@@ -617,7 +683,7 @@ function Onboarding({ onLogin }: { onLogin: (username: string, ageGroup: string,
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       className="w-full bg-[#111] border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] transition-all font-mono font-bold tracking-widest uppercase shadow-inner"
-                      placeholder="ENTER CODENAME"
+                      placeholder="ENTER NAME"
                       maxLength={15}
                     />
                   </motion.div>
@@ -625,7 +691,7 @@ function Onboarding({ onLogin }: { onLogin: (username: string, ageGroup: string,
 
                 {step === 2 && (
                   <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-3">
-                    <label className="block text-xs text-[#a3a3a3] font-medium tracking-wide mb-3">CLEARANCE LEVEL (AGE)</label>
+                    <label className="block text-xs text-[#a3a3a3] font-medium tracking-wide mb-3 uppercase">How old are you?</label>
                     {['UNDER_12', '13_TO_17', '18_PLUS'].map(age => (
                       <button
                         key={age}
@@ -641,7 +707,7 @@ function Onboarding({ onLogin }: { onLogin: (username: string, ageGroup: string,
 
                 {step === 3 && (
                   <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-3">
-                    <label className="block text-xs text-[#a3a3a3] font-medium tracking-wide mb-3">PRIMARY SPECIALIZATION</label>
+                    <label className="block text-xs text-[#a3a3a3] font-medium tracking-wide mb-3 uppercase">Choose Your Best Skill</label>
                     {['CRYPTOGRAPHY', 'CYBER_SECURITY', 'FIELD_OPS', 'SIGNAL_INT'].map(spec => (
                       <button
                         key={spec}
@@ -662,15 +728,15 @@ function Onboarding({ onLogin }: { onLogin: (username: string, ageGroup: string,
                   disabled={(step === 1 && !username) || (step === 2 && !ageGroup) || (step === 3 && !specialization)}
                   className="w-full bg-gradient-to-r from-[#2563eb] to-[#3b82f6] hover:from-[#1d4ed8] hover:to-[#2563eb] text-white font-bold tracking-widest text-xs py-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(59,130,246,0.4)] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                 >
-                  {step < 3 ? 'PROCEED' : <><Unlock className="w-4 h-4" /> INITIATE_UPLINK</>}
+                  {step < 3 ? 'NEXT' : <><Unlock className="w-4 h-4" /> START TRAINING</>}
                 </button>
               </div>
             </form>
             
             <div className="mt-8 pt-6 border-t border-white/5 text-center">
-              <div className="flex items-center justify-center gap-2 text-[#737373] text-[9px] font-mono tracking-widest">
+              <div className="flex items-center justify-center gap-2 text-[#737373] text-[9px] font-mono tracking-widest uppercase">
                 <AlertTriangle className="w-3 h-3" />
-                <span>UNAUTHORIZED ACCESS IS STRICTLY PROHIBITED</span>
+                <span>Play fair and have fun!</span>
               </div>
             </div>
           </motion.div>
