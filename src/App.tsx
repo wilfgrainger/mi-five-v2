@@ -48,7 +48,6 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState<Category | 'ALL_DATA_FILES'>('ALL_DATA_FILES');
   const [gameMode, setGameMode] = useState<'TRAINING' | 'CHALLENGE'>('TRAINING');
   const [sortBy, setSortBy] = useState<'DIFFICULTY' | 'POINTS' | 'TITLE' | 'STATUS'>('DIFFICULTY');
-  const [showBot, setShowBot] = useState(false);
   const [visibleCount, setVisibleCount] = useState(12);
   const [dailyChallengeId, setDailyChallengeId] = useState<string>('');
   const [timeLeft, setTimeLeft] = useState<string>('');
