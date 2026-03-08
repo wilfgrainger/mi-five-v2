@@ -53,8 +53,9 @@ app.post('/auth/verify', async (c) => {
 
   if (!user) {
     const userId = uuidv4();
-    const randomDigits = uuidv4().replace(/\D/g, '').slice(0, 4) || '0000';
-    const username = `Agent_${randomDigits}`;
+    const array = new Uint32Array(1);
+    crypto.getRandomValues(array);
+    const username = `Agent_${array[0] % 10000}`;
     await c.env.DB.prepare('INSERT INTO users (id, email, username) VALUES (?, ?, ?)')
       .bind(userId, email, username)
       .run();

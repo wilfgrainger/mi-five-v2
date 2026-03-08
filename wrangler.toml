@@ -6,7 +6,7 @@ compatibility_flags = ["nodejs_compat"]
 [assets]
 directory = "dist"
 
-[[d1_databases]]
-binding = "DB"
-database_name = "mi-five-v2-db"
-database_id = "562fb39d-21e1-43e7-b676-e17df20b08db" # you can update this later
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "mi-five-v2-db"
+# database_id = "562fb39d-21e1-43e7-b676-e17df20b08db" # you can update this later

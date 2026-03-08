@@ -26,8 +26,8 @@ jobs:
       - name: Build frontend
         run: npm run build
 
-      - name: Deploy to Cloudflare Pages
+      - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_WORKER_TOKEN }}
-          command: pages deploy dist --project-name=spy-academy --commit-dirty=true
+          apiToken: ${{ secrets.MI_FIVE }}
+          command: deploy
