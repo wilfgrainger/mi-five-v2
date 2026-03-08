@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
-import { handle } from 'hono/cloudflare-pages';
 import { v4 as uuidv4 } from 'uuid';
-import { generateRandomPuzzle } from '../../src/puzzleGenerator';
+import { generateRandomPuzzle } from '../src/puzzleGenerator';
 
 type Bindings = {
   DB: D1Database;
@@ -263,4 +262,4 @@ app.get('/leaderboard', async (c) => {
   return c.json({ leaderboard: topUsers });
 });
 
-export const onRequest = handle(app);
+export default app;

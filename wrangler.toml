@@ -1,8 +1,12 @@
-name = "spy-academy"
-pages_build_output_dir = "dist"
+name = "mi-five-v2"
+main = "worker/index.ts"
 compatibility_date = "2024-03-05"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "dist"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "spy-academy-db"
-database_id = "your-d1-database-id"
+database_name = "mi-five-v2-db"
+database_id = "562fb39d-21e1-43e7-b676-e17df20b08db" # you can update this later
