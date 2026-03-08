@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Shield, RefreshCw, Download, Upload, LogOut, User as UserIcon, Lock, Unlock, ChevronRight, ArrowLeft, Cpu, Radio, AlertTriangle, CheckCircle2, Share2, Image as ImageIcon, Briefcase, Map, MessageSquare, ScanLine } from 'lucide-react';
+import { Shield, RefreshCw, Download, Upload, LogOut, User as UserIcon, Lock, Unlock, ChevronRight, ArrowLeft, Cpu, Radio, AlertTriangle, CheckCircle2, Share2, Image as ImageIcon, Briefcase, Map, MessageSquare, ScanLine, Zap, Timer, Trophy } from 'lucide-react';
 import { puzzles, Puzzle, Category } from './data/puzzles';
 import LiveSpyBot from './components/LiveSpyBot';
 import Tutorial from './components/Tutorial';
@@ -13,6 +13,7 @@ type User = {
   ageGroup: string;
   specialization: string;
   tutorialCompleted?: boolean;
+  dailyChallengeCompleted?: string; // date string YYYY-MM-DD
 };
 
 const RANKS = [
@@ -50,6 +51,42 @@ export default function App() {
   const [sortBy, setSortBy] = useState<'DIFFICULTY' | 'POINTS' | 'TITLE' | 'STATUS'>('DIFFICULTY');
   const [showBot, setShowBot] = useState(false);
   const [visibleCount, setVisibleCount] = useState(12);
+  const [dailyChallengeId, setDailyChallengeId] = useState<string>('');
+  const [timeLeft, setTimeLeft] = useState<string>('');
+
+  // Daily Challenge Logic
+  useEffect(() => {
+    const today = new Date();
+    const dateString = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+    
+    // Pick a daily challenge based on the date
+    let hash = 0;
+    for (let i = 0; i < dateString.length; i++) {
+      hash = ((hash << 5) - hash) + dateString.charCodeAt(i);
+      hash |= 0;
+    }
+    const index = Math.abs(hash) % puzzles.length;
+    setDailyChallengeId(puzzles[index].id);
+
+    // Timer logic
+    const updateTimer = () => {
+      const now = new Date();
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+      
+      const diff = tomorrow.getTime() - now.getTime();
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Load user from local storage
   useEffect(() => {
@@ -101,12 +138,20 @@ export default function App() {
     if (!user) return;
     if (user.solvedPuzzles.includes(puzzleId)) return; // Already solved
 
-    const newScore = user.score + points;
+    const isDaily = puzzleId === dailyChallengeId;
+    const today = new Date();
+    const dateString = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+    const alreadyDoneDaily = user.dailyChallengeCompleted === dateString;
+    
+    // Bonus points for daily challenge (2x points)
+    const finalPoints = (isDaily && !alreadyDoneDaily) ? points * 2 : points;
+
     const updatedUser = {
       ...user,
-      score: newScore,
-      rank: getRank(newScore),
-      solvedPuzzles: [...user.solvedPuzzles, puzzleId]
+      score: user.score + finalPoints,
+      rank: getRank(user.score + finalPoints),
+      solvedPuzzles: [...user.solvedPuzzles, puzzleId],
+      dailyChallengeCompleted: isDaily ? dateString : user.dailyChallengeCompleted
     };
     
     localStorage.setItem('spy_user', JSON.stringify(updatedUser));
@@ -170,8 +215,8 @@ export default function App() {
             <Shield className="w-5 h-5 md:w-6 md:h-6 text-[#3b82f6]" />
           </div>
           <div>
-            <h1 className="text-[10px] md:text-sm font-bold tracking-widest text-white font-sans uppercase">SPY ACADEMY</h1>
-            <p className="text-[8px] md:text-[10px] text-[#3b82f6] tracking-widest mt-0.5 font-mono uppercase">Training Center // Level 1</p>
+            <h1 className="text-[10px] md:text-sm font-bold tracking-widest text-white font-sans uppercase">INTELLIGENCE_AUTHORITY</h1>
+            <p className="text-[8px] md:text-[10px] text-[#3b82f6] tracking-widest mt-0.5 font-mono uppercase">ESTABLISHED_SECURE_TUNNEL // 0xAF92</p>
           </div>
         </div>
         
@@ -198,13 +243,13 @@ export default function App() {
             className={`flex-1 px-4 py-2 text-xs font-bold tracking-widest rounded-lg transition-all font-mono ${view === 'dashboard' ? 'bg-[#3b82f6]/20 text-[#3b82f6] shadow-sm' : 'text-[#a3a3a3] hover:text-white hover:bg-white/5'}`}
             onClick={() => { setView('dashboard'); setActivePuzzle(null); }}
           >
-            01_ MISSIONS
+            OPERATIONAL_THEATRE
           </button>
           <button 
             className="flex-1 px-4 py-2 text-xs font-bold tracking-widest rounded-lg text-[#a3a3a3] hover:text-white hover:bg-white/5 transition-all font-mono"
             onClick={() => setShowBot(!showBot)}
           >
-            02_ HELP BOT
+            SUPPORT_NODE
           </button>
         </div>
       </div>
@@ -221,42 +266,98 @@ export default function App() {
               className="max-w-6xl mx-auto space-y-8"
             >
               {/* User Profile Card */}
-              <div className="bg-[#111] border border-white/5 rounded-3xl p-5 md:p-8 flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 shadow-xl relative overflow-hidden">
+              <div className="bg-[#111] border border-white/5 rounded-3xl p-8 flex flex-col items-center gap-8 shadow-xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-[#3b82f6]/5 rounded-full blur-3xl -z-10 translate-x-1/2 -translate-y-1/2"></div>
+                
                 <div className="flex flex-col items-center z-10">
-                  <div className="w-20 h-20 md:w-24 md:h-24 bg-[#1a1a1a] rounded-2xl border border-white/10 flex items-center justify-center mb-3 relative shadow-inner">
-                    <UserIcon className="w-10 h-10 md:w-12 md:h-12 text-[#444]" />
-                    <div className="absolute -bottom-2 bg-gradient-to-r from-[#2563eb] to-[#3b82f6] text-white text-[8px] md:text-[9px] font-bold px-3 py-1 rounded-full tracking-widest font-mono shadow-md">
+                  <div className="w-24 h-24 bg-[#1a1a1a] rounded-2xl border border-white/10 flex items-center justify-center mb-4 relative shadow-inner">
+                    <UserIcon className="w-12 h-12 text-[#444]" />
+                    <div className="absolute -bottom-2 bg-[#3b82f6] text-white text-[9px] font-bold px-3 py-1 rounded-full tracking-widest font-mono shadow-md uppercase">
                       ACCESS_LEVEL_1
                     </div>
                   </div>
                 </div>
                 
-                <div className="flex-1 grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-6 w-full z-10">
-                  <div>
-                    <p className="text-[8px] md:text-[10px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">AGENT NAME</p>
-                    <p className="text-sm md:text-xl font-bold tracking-widest text-white truncate">{user.username}</p>
+                <div className="w-full grid grid-cols-2 gap-8 z-10 text-center md:text-left">
+                  <div className="flex flex-col items-center md:items-start">
+                    <p className="text-[10px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">OPERATIVE_IDENTIFIER</p>
+                    <p className="text-xl font-bold tracking-widest text-white uppercase">{user.username}</p>
                   </div>
-                  <div>
-                    <p className="text-[8px] md:text-[10px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">RANK</p>
-                    <p className="text-sm md:text-xl font-bold tracking-widest text-[#3b82f6]">{user.rank}</p>
+                  <div className="flex flex-col items-center md:items-start">
+                    <p className="text-[10px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">CLEARANCE_CLASSIFICATION</p>
+                    <p className="text-xl font-bold tracking-widest text-[#3b82f6] uppercase">{user.rank}</p>
                   </div>
-                  <div>
-                    <p className="text-[8px] md:text-[10px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">SKILL</p>
-                    <p className="text-[10px] md:text-sm font-bold tracking-widest text-[#d4d4d4] uppercase">{user.specialization?.replace('_', ' ') || 'UNASSIGNED'}</p>
+                  <div className="flex flex-col items-center md:items-start">
+                    <p className="text-[10px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">UPLINK_STATUS</p>
+                    <p className="text-sm font-bold tracking-widest text-white uppercase">ACTIVE_DEPLOYMENT</p>
                   </div>
-                  <div>
-                    <p className="text-[8px] md:text-[10px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">TOTAL SCORE</p>
-                    <p className="text-sm md:text-xl font-bold tracking-widest text-[#10b981]">{user.score}</p>
+                  <div className="flex flex-col items-center md:items-start">
+                    <p className="text-[10px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">CURRENT_INTELLIGENCE_YIELD</p>
+                    <p className="text-xl font-bold tracking-widest text-[#10b981]">{user.score}</p>
                   </div>
                 </div>
                 
-                <div className="w-full md:w-auto md:ml-auto flex flex-col justify-center z-10">
+                <button 
+                  onClick={handleShare}
+                  className="w-full flex items-center justify-center gap-2 px-5 py-4 bg-[#3b82f6]/10 hover:bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/30 rounded-xl transition-colors text-[10px] font-bold tracking-widest font-mono uppercase"
+                >
+                  <Share2 className="w-4 h-4" /> SHARE PROGRESS
+                </button>
+              </div>
+
+              {/* Daily Challenge Section */}
+              <div className="bg-[#111] border border-[#10b981]/20 rounded-3xl p-8 relative overflow-hidden shadow-xl">
+                <div className="absolute top-0 right-0 p-8 opacity-5">
+                  <Trophy className="w-48 h-48 text-white" />
+                </div>
+                
+                <div className="flex flex-col items-center text-center relative z-10">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="bg-[#3b82f6]/20 p-3 rounded-xl border border-[#3b82f6]/30">
+                      <Zap className="w-6 h-6 text-[#3b82f6]" />
+                    </div>
+                    <h2 className="text-2xl font-bold tracking-widest text-white uppercase">CRITICAL_DIRECTIVE</h2>
+                    <div className="bg-[#10b981]/20 px-4 py-1.5 rounded-full border border-[#10b981]/30">
+                      <span className="text-[10px] font-bold text-[#10b981] tracking-widest font-mono uppercase">2X BONUS</span>
+                    </div>
+                  </div>
+                  
+                  <p className="text-[#a3a3a3] text-sm mb-8 max-w-2xl leading-relaxed">
+                    Complete today's specialized mission to earn double intelligence yield and unlock exclusive Academy rewards.
+                  </p>
+                  
+                  <div className="flex justify-center gap-12 mb-10">
+                    <div className="flex items-center gap-3">
+                      <Timer className="w-5 h-5 text-[#3b82f6]" />
+                      <span className="text-sm font-bold font-mono text-white tracking-widest">{timeLeft}</span>
+                      <span className="text-[10px] text-[#555] font-mono uppercase tracking-widest">REMAINING</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Trophy className="w-5 h-5 text-[#eab308]" />
+                      <span className="text-sm font-bold font-mono text-white tracking-widest">+{puzzles.find(p => p.id === dailyChallengeId)?.points ? puzzles.find(p => p.id === dailyChallengeId)!.points * 2 : 0}</span>
+                      <span className="text-[10px] text-[#555] font-mono uppercase tracking-widest">POTENTIAL YIELD</span>
+                    </div>
+                  </div>
+                  
                   <button 
-                    onClick={handleShare}
-                    className="w-full md:w-auto flex items-center justify-center gap-2 px-5 py-3 bg-[#3b82f6]/10 hover:bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/30 rounded-xl transition-colors text-[10px] font-bold tracking-widest font-mono"
+                    onClick={() => {
+                      const puzzle = puzzles.find(p => p.id === dailyChallengeId);
+                      if (puzzle) {
+                        setActivePuzzle(puzzle);
+                        setView('puzzle');
+                      }
+                    }}
+                    className={`w-full py-5 rounded-xl font-bold tracking-widest text-xs transition-all flex items-center justify-center gap-3 shadow-xl ${
+                      user.solvedPuzzles.includes(dailyChallengeId)
+                        ? 'bg-[#10b981]/10 text-[#10b981] border border-[#10b981]/30 cursor-default'
+                        : 'bg-[#3b82f6] hover:bg-[#2563eb] text-white shadow-[0_4px_20px_rgba(59,130,246,0.3)]'
+                    }`}
                   >
-                    <Share2 className="w-4 h-4" /> SHARE PROGRESS
+                    {user.solvedPuzzles.includes(dailyChallengeId) ? (
+                      <><CheckCircle2 className="w-5 h-5" /> COMPLETED</>
+                    ) : (
+                      <><Lock className="w-5 h-5" /> START MISSION</>
+                    )}
                   </button>
                 </div>
               </div>
@@ -265,7 +366,7 @@ export default function App() {
               <div className="space-y-6">
                 <div>
                   <div className="flex items-center gap-4 mb-4">
-                    <p className="text-[10px] text-[#3b82f6] tracking-widest uppercase font-mono">GAME MODE</p>
+                    <p className="text-[10px] text-[#3b82f6] tracking-widest uppercase font-mono">OPERATIONAL_THEATRE_REGISTRY</p>
                     <div className="h-[1px] flex-1 bg-white/5"></div>
                   </div>
                   <div className="flex gap-3">
@@ -273,14 +374,14 @@ export default function App() {
                       onClick={() => setGameMode('TRAINING')}
                       className={`flex-1 px-4 py-3 rounded-xl border transition-all flex flex-col items-center gap-1 ${gameMode === 'TRAINING' ? 'bg-[#3b82f6]/20 border-[#3b82f6]/50 text-[#3b82f6]' : 'bg-[#111] border-white/5 text-[#a3a3a3]'}`}
                     >
-                      <span className="text-xs font-bold tracking-widest">TRAINING MODE</span>
+                      <span className="text-xs font-bold tracking-widest">TRAINING_MODE</span>
                       <span className="text-[8px] opacity-70">FREE HINTS • PRACTICE</span>
                     </button>
                     <button
                       onClick={() => setGameMode('CHALLENGE')}
                       className={`flex-1 px-4 py-3 rounded-xl border transition-all flex flex-col items-center gap-1 ${gameMode === 'CHALLENGE' ? 'bg-[#ef4444]/20 border-[#ef4444]/50 text-[#ef4444]' : 'bg-[#111] border-white/5 text-[#a3a3a3]'}`}
                     >
-                      <span className="text-xs font-bold tracking-widest">CHALLENGE MODE</span>
+                      <span className="text-xs font-bold tracking-widest">CHALLENGE_MODE</span>
                       <span className="text-[8px] opacity-70">HIGH STAKES • NO HELP</span>
                     </button>
                   </div>
@@ -288,7 +389,7 @@ export default function App() {
 
                 <div>
                   <div className="flex items-center gap-4 mb-4">
-                    <p className="text-[10px] text-[#3b82f6] tracking-widest uppercase font-mono">CHOOSE YOUR MISSION</p>
+                    <p className="text-[10px] text-[#3b82f6] tracking-widest uppercase font-mono">CRITICAL_INTELLIGENCE_DIRECTIVES</p>
                     <div className="h-[1px] flex-1 bg-white/5"></div>
                   </div>
                   
@@ -297,7 +398,7 @@ export default function App() {
                       onClick={() => setActiveCategory('ALL_DATA_FILES')}
                       className={`px-4 py-2 text-[10px] font-bold tracking-widest rounded-lg border transition-all font-mono ${activeCategory === 'ALL_DATA_FILES' ? 'bg-[#3b82f6]/20 text-[#3b82f6] border-[#3b82f6]/50 shadow-[0_0_10px_rgba(59,130,246,0.1)]' : 'bg-[#111] text-[#a3a3a3] border-white/5 hover:border-white/20 hover:text-white'}`}
                     >
-                      [ ALL MISSIONS // {puzzles.length} ]
+                      [ GLOBAL_ASSET_REGISTRY // {puzzles.length} ]
                     </button>
                     {Object.entries(categoryCounts).map(([cat, count]) => (
                       <button
@@ -313,7 +414,7 @@ export default function App() {
 
                 <div>
                   <div className="flex items-center gap-4 mb-4">
-                    <p className="text-[10px] text-[#3b82f6] tracking-widest uppercase font-mono">SORT BY</p>
+                    <p className="text-[10px] text-[#3b82f6] tracking-widest uppercase font-mono">DATA_INTEGRITY_SORT</p>
                     <div className="h-[1px] flex-1 bg-white/5"></div>
                   </div>
                   
@@ -337,7 +438,7 @@ export default function App() {
               </div>
 
               {/* Puzzle Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="flex flex-col gap-6">
                 {visiblePuzzles.map((puzzle) => {
                   const isSolved = user.solvedPuzzles.includes(puzzle.id);
                   const isLocked = user.score < DIFFICULTY_THRESHOLDS[puzzle.difficulty] && !isSolved;
@@ -348,57 +449,71 @@ export default function App() {
                   return (
                     <motion.div
                       key={puzzle.id}
-                      whileHover={!isLocked ? { scale: 1.02, y: -4 } : {}}
-                      className={`bg-[#111] border ${isSolved ? 'border-[#10b981]/30 hover:border-[#10b981]/50 hover:shadow-[0_8px_30px_rgba(16,185,129,0.15)]' : isLocked ? 'border-white/5 opacity-75' : 'border-white/10 hover:border-[#3b82f6]/50 hover:shadow-[0_8px_30px_rgba(59,130,246,0.15)]'} rounded-3xl p-6 flex flex-col relative overflow-hidden group transition-all duration-300 ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                      whileHover={!isLocked ? { scale: 1.01, x: 4 } : {}}
+                      className={`bg-[#111] border ${isSolved ? 'border-[#10b981]/30' : isLocked ? 'border-white/5 opacity-75' : 'border-white/10'} rounded-3xl p-8 flex gap-8 relative overflow-hidden group transition-all duration-300 ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                       onClick={() => { if (!isLocked) { setActivePuzzle(puzzle); setView('puzzle'); } }}
                     >
-                      {isSolved && (
-                        <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-[#10b981]/20 to-transparent flex items-start justify-end p-4 rounded-bl-3xl">
-                          <CheckCircle2 className="w-5 h-5 text-[#10b981]" />
-                        </div>
-                      )}
-                      {isLocked && (
-                        <div className="absolute inset-0 bg-[#050505]/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-3xl border border-white/5">
-                          <Lock className="w-8 h-8 text-[#444] mb-3" />
-                          <p className="text-xs font-bold tracking-widest text-[#737373] font-mono">CLASSIFIED_FILE</p>
-                          <p className="text-[9px] text-[#555] tracking-widest mt-2 font-mono">REQUIRES {DIFFICULTY_THRESHOLDS[puzzle.difficulty]} YIELD</p>
+                      {puzzle.id === dailyChallengeId && (
+                        <div className="absolute top-0 left-0 bg-gradient-to-r from-[#3b82f6] to-[#10b981] px-4 py-1.5 rounded-br-2xl z-20 shadow-lg">
+                          <div className="flex items-center gap-2">
+                            <Zap className="w-4 h-4 text-white" />
+                            <span className="text-[10px] font-bold text-white tracking-widest font-mono uppercase">Daily Bonus</span>
+                          </div>
                         </div>
                       )}
                       
-                      <div className="flex justify-between items-start mb-6">
-                        <div className={`p-3 rounded-2xl ${isSolved ? 'bg-[#10b981]/10 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'bg-[#3b82f6]/10 shadow-[0_0_15px_rgba(59,130,246,0.1)]'}`}>
-                          {isSolved ? <Unlock className={`w-5 h-5 text-[#10b981]`} /> : <Lock className="w-5 h-5 text-[#3b82f6]" />}
+                      {/* Left Icon Box */}
+                      <div className="flex-shrink-0">
+                        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${isSolved ? 'bg-[#10b981]/10 border border-[#10b981]/30' : 'bg-[#3b82f6]/10 border border-[#3b82f6]/30'}`}>
+                          {isSolved ? <Unlock className="w-8 h-8 text-[#10b981]" /> : <Lock className="w-8 h-8 text-[#3b82f6]" />}
                         </div>
-                        <div className="flex flex-col items-end gap-2">
-                          <div className="text-right">
-                            <p className="text-[8px] text-[#a3a3a3] tracking-widest mb-1 font-mono">DIFFICULTY</p>
-                            <span className={`text-[9px] font-bold tracking-widest px-2 py-1 rounded-md border ${difficultyColor} font-mono`}>
-                              {puzzle.difficulty}
-                            </span>
-                          </div>
-                          {puzzle.imageUrl && (
-                            <div className="flex items-center gap-1 text-[#3b82f6] bg-[#3b82f6]/10 px-2 py-1 rounded border border-[#3b82f6]/30" title="Contains Image Attachment">
-                              <ImageIcon className="w-3 h-3" />
-                              <span className="text-[8px] font-bold tracking-widest font-mono">IMAGE</span>
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start mb-4">
+                          <h3 className="text-2xl font-bold text-white tracking-wide uppercase truncate pr-4">{puzzle.title}</h3>
+                          <div className="flex gap-3">
+                            <div className="text-right">
+                              <p className="text-[8px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">DIFFICULTY</p>
+                              <span className={`text-[10px] font-bold tracking-widest px-3 py-1 rounded-lg border ${difficultyColor} font-mono uppercase`}>
+                                {puzzle.difficulty}
+                              </span>
                             </div>
-                          )}
+                            {puzzle.imageUrl && (
+                              <div className="text-right">
+                                <p className="text-[8px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">ATTACHMENT</p>
+                                <div className="flex items-center gap-2 text-[#3b82f6] bg-[#3b82f6]/10 px-3 py-1 rounded-lg border border-[#3b82f6]/30">
+                                  <ImageIcon className="w-3.5 h-3.5" />
+                                  <span className="text-[10px] font-bold tracking-widest font-mono uppercase">IMAGE</span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <p className="text-[#a3a3a3] text-base leading-relaxed mb-8 line-clamp-2">{puzzle.description}</p>
+
+                        <div className="flex justify-between items-center pt-6 border-t border-white/5">
+                          <div>
+                            <p className="text-[8px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">MISSION ID</p>
+                            <p className="text-xs text-[#d4d4d4] tracking-widest font-mono uppercase">{puzzle.id}</p>
+                          </div>
+                          <div 
+                            className={`text-sm font-bold tracking-widest flex items-center gap-2 transition-colors font-mono uppercase ${isSolved ? 'text-[#10b981]' : 'text-[#3b82f6]'}`}
+                          >
+                            {isSolved ? 'REVIEW MISSION' : 'SOLVE'} <ChevronRight className="w-5 h-5" />
+                          </div>
                         </div>
                       </div>
 
-                      <h3 className="text-lg font-bold text-white mb-3 font-sans tracking-wide">{puzzle.title}</h3>
-                      <p className="text-sm text-[#a3a3a3] font-sans line-clamp-2 mb-8 flex-1">{puzzle.description}</p>
-
-                      <div className="flex justify-between items-end mt-auto pt-4 border-t border-white/5">
-                        <div>
-                          <p className="text-[8px] text-[#a3a3a3] tracking-widest mb-1 font-mono">MISSION ID</p>
-                          <p className="text-[10px] text-[#d4d4d4] tracking-widest font-mono">{puzzle.id}</p>
+                      {isLocked && (
+                        <div className="absolute inset-0 bg-[#050505]/90 backdrop-blur-md z-30 flex flex-col items-center justify-center rounded-3xl border border-white/5">
+                          <Lock className="w-10 h-10 text-[#444] mb-4" />
+                          <p className="text-sm font-bold tracking-widest text-[#737373] font-mono uppercase">CLASSIFIED_FILE</p>
+                          <p className="text-[10px] text-[#555] tracking-widest mt-2 font-mono uppercase">REQUIRES {DIFFICULTY_THRESHOLDS[puzzle.difficulty]} YIELD</p>
                         </div>
-                        <div 
-                          className={`text-xs font-bold tracking-widest flex items-center gap-1 transition-colors font-mono ${isSolved ? 'text-[#10b981] group-hover:text-[#34d399]' : 'text-[#3b82f6] group-hover:text-[#60a5fa]'}`}
-                        >
-                          {isSolved ? 'REVIEW' : 'SOLVE'} <ChevronRight className="w-4 h-4" />
-                        </div>
-                      </div>
+                      )}
                     </motion.div>
                   );
                 })}

@@ -17,24 +17,24 @@ export const puzzles: Puzzle[] = [
   {
     "id": "0X_GCHQ_X1",
     "title": "THE DIRECTOR'S CROSSWORD",
-    "description": "Analyze the attached crossword grid. The central vertical column spells out a 14-letter word. Clue 3 is 'Government _______ Headquarters (14)'. What is the missing word?",
+    "description": "The 'C' in GCHQ stands for 'Government _______ Headquarters'. What is the missing 14-letter word?",
     "category": "GCHQ_CLASSIC",
     "difficulty": "EASY",
     "points": 50,
     "answer": "COMMUNICATIONS",
     "hint": "What does the 'C' in GCHQ stand for?",
-    "imageUrl": "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&q=80&w=1000"
+    "imageUrl": "https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_GCHQ_X2",
     "title": "CHRISTMAS CHALLENGE: PALs",
-    "description": "Hint 1 from the GCHQ Christmas Challenge states: 'Maybe one of your PALs can help you with the fourth picture.' What encoding system is commonly associated with the acronym PAL in the context of television?",
+    "description": "What analog television color encoding system is commonly associated with the acronym PAL?",
     "category": "SIGNAL_INT",
     "difficulty": "MEDIUM",
     "points": 75,
     "answer": "PHASE ALTERNATING LINE",
     "hint": "It's an analogue television colour encoding system.",
-    "imageUrl": "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&q=80&w=1000"
+    "imageUrl": "https://images.unsplash.com/photo-1594904351111-a072f80b1a71?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_GCHQ_X3",
@@ -50,90 +50,90 @@ export const puzzles: Puzzle[] = [
   {
     "id": "0X_GCHQ_X4",
     "title": "THE INSECT COLONY",
-    "description": "Hint 5 from the GCHQ Christmas Challenge asks: 'What sort of insects live in colonies? Was not knowing that the CAUSE of you needing a hint for this puzzle?' What insect is it referring to?",
+    "description": "What sort of small, hardworking insects live in colonies? (Hint: The answer is 4 letters long).",
     "category": "LOGIC_OPS",
     "difficulty": "EASY",
     "points": 50,
     "answer": "ANTS",
     "hint": "Think of small, hardworking insects.",
-    "imageUrl": "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&q=80&w=1000"
+    "imageUrl": "https://images.unsplash.com/photo-1555037015-1498966bcd7c?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_GCHQ_X5",
     "title": "THE ROAD SAFETY CODE",
-    "description": "Hint 2 from the GCHQ Christmas Challenge asks: 'What Code do you follow to Cross the road safely? Which show features a panther?' What is the name of the code?",
+    "description": "What is the name of the code you follow to cross the road safely? (Hint: It's named after a color and a shape).",
     "category": "GCHQ_CLASSIC",
     "difficulty": "EASY",
     "points": 50,
     "answer": "GREEN CROSS CODE",
     "hint": "It's a famous UK road safety campaign.",
-    "imageUrl": "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&q=80&w=1000"
+    "imageUrl": "https://images.unsplash.com/photo-1519631128182-433895475ffd?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_GCHQ_X6",
     "title": "THE CIPHER MESSAGE",
-    "description": "Hint 7 from the GCHQ Christmas Challenge states: 'The first two words in are PERHAPS READING. Use this to work out which letters represent A, D, E, G, H, I, N, P, R and S. These will help you find out how the MESSAGE is CIPHERED.' If 'P' is represented by 'X', and 'E' by 'Y', what might 'PE' be?",
+    "description": "In a simple code, if 'P' is replaced by 'X', and 'E' by 'Y', how would you write 'PE'?",
     "category": "CYBER_SECURITY",
     "difficulty": "HARD",
     "points": 100,
     "answer": "XY",
     "hint": "It's a simple substitution cipher.",
-    "imageUrl": "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&q=80&w=1000"
+    "imageUrl": "https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_IMG_1",
     "title": "THE HIDDEN MESSAGE",
-    "description": "Analyze the attached image. There is a hidden message in the noise. What does it say?",
+    "description": "Look closely at the pattern in this digital signal. What 6-letter word is hidden in the code?",
     "category": "IMAGE_INT",
     "difficulty": "MEDIUM",
     "points": 75,
     "answer": "ENIGMA",
-    "hint": "Look closely at the contrast.",
-    "imageUrl": "https://images.unsplash.com/photo-1614064641913-a53b946f7137?auto=format&fit=crop&q=80&w=1000"
+    "hint": "The word starts with 'E' and relates to code-breaking.",
+    "imageUrl": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_IMG_2",
     "title": "SATELLITE RECONNAISSANCE",
-    "description": "Identify the famous landmark in this satellite imagery.",
+    "description": "Identify the famous landmark in this high-altitude aerial view of Paris.",
     "category": "IMAGE_INT",
     "difficulty": "EASY",
     "points": 50,
     "answer": "EIFFEL TOWER",
-    "hint": "It's located in Paris, France.",
-    "imageUrl": "https://images.unsplash.com/photo-1543305113-82b52b21703e?auto=format&fit=crop&q=80&w=1000"
+    "hint": "It's the most famous landmark in France.",
+    "imageUrl": "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_IMG_3",
     "title": "STEGANOGRAPHY CHALLENGE",
-    "description": "The attached image contains a hidden file. What is the name of the file?",
+    "description": "We found a hidden text file inside this image. What is the most common 3-letter extension for a text file? (e.g. .DOC, .PDF, .???)",
     "category": "IMAGE_INT",
     "difficulty": "HARD",
     "points": 100,
-    "answer": "SECRET.TXT",
-    "hint": "Think about common file extensions.",
+    "answer": "TXT",
+    "hint": "It stands for 'Text'.",
     "imageUrl": "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_CIPHER_1",
     "title": "THE VIGENÈRE INTERCEPT",
-    "description": "We've intercepted a message encrypted with a Vigenère cipher. The ciphertext is 'LXFOPVEFRNHR'. We believe the keyword is 'LEMON'. Decrypt the message.",
+    "description": "Decrypt this message: 'LXFOPVEFRNHR'. The secret keyword is 'LEMON'.",
     "category": "CYBER_SECURITY",
     "difficulty": "HARD",
     "points": 100,
     "answer": "ATTACKATDAWN",
     "hint": "Use a Vigenère square or an online decoder with the keyword 'LEMON'.",
-    "imageUrl": "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&q=80&w=1000"
+    "imageUrl": "https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_CIPHER_2",
     "title": "THE PLAYFAIR SQUARE",
-    "description": "Decrypt the following Playfair cipher text: 'BMODZBXDNABK'. The keyword used to generate the 5x5 grid (omitting 'J') is 'MONARCHY'.",
+    "description": "Decrypt this code: 'BMODZBXDNABK'. The secret keyword is 'MONARCHY'.",
     "category": "CYBER_SECURITY",
     "difficulty": "ELITE",
     "points": 200,
     "answer": "BALLOON",
-    "hint": "Construct the 5x5 grid starting with 'MONARCHY' followed by the remaining alphabet. Remember Playfair rules for pairs.",
-    "imageUrl": "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&q=80&w=1000"
+    "hint": "Construct a 5x5 grid starting with 'MONARCHY'.",
+    "imageUrl": "https://images.unsplash.com/photo-1543286386-713bdd548da4?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_MM_1",
@@ -176,7 +176,8 @@ export const puzzles: Puzzle[] = [
     "difficulty": "HARD",
     "points": 100,
     "answer": "6",
-    "hint": "Count the letters in the English word for each number."
+    "hint": "Count the letters in the English word for each number.",
+    "imageUrl": "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_ELITE_2",
@@ -186,7 +187,8 @@ export const puzzles: Puzzle[] = [
     "difficulty": "HARD",
     "points": 100,
     "answer": "FINGER",
-    "hint": "Think of James Bond for the first one, and what you leave at a crime scene for the last."
+    "hint": "Think of James Bond for the first one, and what you leave at a crime scene for the last.",
+    "imageUrl": "https://images.unsplash.com/photo-1530210124550-912dc1381cb8?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_ELITE_3",
@@ -196,7 +198,8 @@ export const puzzles: Puzzle[] = [
     "difficulty": "HARD",
     "points": 100,
     "answer": "N",
-    "hint": "Look up to the night sky. Think of our solar system."
+    "hint": "Look up to the night sky. Think of our solar system.",
+    "imageUrl": "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_ELITE_4",
@@ -206,7 +209,8 @@ export const puzzles: Puzzle[] = [
     "difficulty": "MEDIUM",
     "points": 50,
     "answer": "30",
-    "hint": "Thirty days hath..."
+    "hint": "Thirty days hath...",
+    "imageUrl": "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_ELITE_5",
@@ -216,7 +220,8 @@ export const puzzles: Puzzle[] = [
     "difficulty": "HARD",
     "points": 100,
     "answer": "200",
-    "hint": "Think about how these numbers are spelled in English. What letter do they all start with?"
+    "hint": "Think about how these numbers are spelled in English. What letter do they all start with?",
+    "imageUrl": "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_ELITE_6",
@@ -226,7 +231,8 @@ export const puzzles: Puzzle[] = [
     "difficulty": "MEDIUM",
     "points": 50,
     "answer": "BERLIN",
-    "hint": "Checkpoint Charlie."
+    "hint": "Checkpoint Charlie.",
+    "imageUrl": "https://images.unsplash.com/photo-1560930950-5cc60f804d46?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_ELITE_10",
@@ -236,7 +242,8 @@ export const puzzles: Puzzle[] = [
     "difficulty": "HARD",
     "points": 100,
     "answer": "JUAN PUJOL GARCIA",
-    "hint": "He was a Spanish double agent."
+    "hint": "He was a Spanish double agent.",
+    "imageUrl": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_GEN_11",
@@ -246,7 +253,8 @@ export const puzzles: Puzzle[] = [
     "difficulty": "EASY",
     "points": 25,
     "answer": "ENIGMA",
-    "hint": "Shift each letter back by 1 positions in the alphabet."
+    "hint": "Shift each letter back by 1 positions in the alphabet.",
+    "imageUrl": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_GEN_12",
@@ -256,7 +264,8 @@ export const puzzles: Puzzle[] = [
     "difficulty": "EASY",
     "points": 25,
     "answer": "BLETCHLEY",
-    "hint": "Shift each letter back by 2 positions in the alphabet."
+    "hint": "Shift each letter back by 2 positions in the alphabet.",
+    "imageUrl": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_GEN_13",
@@ -266,7 +275,8 @@ export const puzzles: Puzzle[] = [
     "difficulty": "EASY",
     "points": 25,
     "answer": "TURING",
-    "hint": "Shift each letter back by 3 positions in the alphabet."
+    "hint": "Shift each letter back by 3 positions in the alphabet.",
+    "imageUrl": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_GEN_14",
@@ -276,7 +286,8 @@ export const puzzles: Puzzle[] = [
     "difficulty": "EASY",
     "points": 25,
     "answer": "MI5",
-    "hint": "Shift each letter back by 4 positions in the alphabet."
+    "hint": "Shift each letter back by 4 positions in the alphabet.",
+    "imageUrl": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_GEN_15",
@@ -286,7 +297,8 @@ export const puzzles: Puzzle[] = [
     "difficulty": "EASY",
     "points": 25,
     "answer": "INTELLIGENCE",
-    "hint": "Shift each letter back by 5 positions in the alphabet."
+    "hint": "Shift each letter back by 5 positions in the alphabet.",
+    "imageUrl": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_GEN_16",
@@ -296,7 +308,8 @@ export const puzzles: Puzzle[] = [
     "difficulty": "EASY",
     "points": 25,
     "answer": "ESPIONAGE",
-    "hint": "Shift each letter back by 6 positions in the alphabet."
+    "hint": "Shift each letter back by 6 positions in the alphabet.",
+    "imageUrl": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1000"
   },
   {
     "id": "0X_GEN_17",
