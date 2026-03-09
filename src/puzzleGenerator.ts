@@ -10,17 +10,24 @@ const SPY_QUOTES = [
   "THE MOLE IS IN THE SYNDICATE"
 ];
 
+const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const CHAR_TO_INDEX: Record<string, number> = {};
+for (let i = 0; i < ALPHABET.length; i++) {
+  CHAR_TO_INDEX[ALPHABET[i]] = i;
+}
+
 export function generateSubstitution(userId: string) {
   const plaintext = SPY_QUOTES[Math.floor(Math.random() * SPY_QUOTES.length)];
-  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  let shuffled = alphabet.split('').sort(() => 0.5 - Math.random()).join('');
+  const shuffled = ALPHABET.split('').sort(() => 0.5 - Math.random()).join('');
   
   let encrypted = "";
-  for (let char of plaintext) {
-    if (char === " ") encrypted += " ";
-    else {
-      const idx = alphabet.indexOf(char);
+  for (let i = 0; i < plaintext.length; i++) {
+    const char = plaintext[i];
+    const idx = CHAR_TO_INDEX[char];
+    if (idx !== undefined) {
       encrypted += shuffled[idx];
+    } else {
+      encrypted += char;
     }
   }
 
