@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { generateRandomPuzzle } from '../src/puzzleGenerator';
 
 type Bindings = {
-  DB: D1Database;
+  DB: import('@cloudflare/workers-types').D1Database;
   APP_URL?: string;
 };
 

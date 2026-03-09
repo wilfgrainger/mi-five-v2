@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import crypto from 'node:crypto';
 
 const SPY_QUOTES = [
   "THE ASSET HAS BEEN COMPROMISED",
@@ -11,9 +12,16 @@ const SPY_QUOTES = [
 ];
 
 export function generateSubstitution(userId: string) {
-  const plaintext = SPY_QUOTES[Math.floor(Math.random() * SPY_QUOTES.length)];
+  const plaintext = SPY_QUOTES[crypto.randomInt(SPY_QUOTES.length)];
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  let shuffled = alphabet.split('').sort(() => 0.5 - Math.random()).join('');
+
+  // Fisher-Yates shuffle using crypto.randomInt
+  let arr = alphabet.split('');
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = crypto.randomInt(i + 1);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  let shuffled = arr.join('');
   
   let encrypted = "";
   for (let char of plaintext) {
@@ -38,8 +46,8 @@ export function generateSubstitution(userId: string) {
 }
 
 export function generateScytale(userId: string) {
-  const plaintext = SPY_QUOTES[Math.floor(Math.random() * SPY_QUOTES.length)].replace(/ /g, '');
-  const diameter = Math.floor(Math.random() * 4) + 3; // 3 to 6
+  const plaintext = SPY_QUOTES[crypto.randomInt(SPY_QUOTES.length)].replace(/ /g, '');
+  const diameter = crypto.randomInt(4) + 3; // 3 to 6
   
   // Pad plaintext
   let padded = plaintext;
@@ -83,8 +91,8 @@ Trust no one and verify all incoming transmissions.`;
   const coordinates = [];
   
   for (let i = 0; i < 3; i++) {
-    const lineIdx = Math.floor(Math.random() * lines.length);
-    const wordIdx = Math.floor(Math.random() * words[lineIdx].length);
+    const lineIdx = crypto.randomInt(lines.length);
+    const wordIdx = crypto.randomInt(words[lineIdx].length);
     targetWords.push(words[lineIdx][wordIdx].replace(/[^a-zA-Z]/g, '').toUpperCase());
     coordinates.push([lineIdx + 1, wordIdx + 1]); // 1-indexed
   }
@@ -131,6 +139,6 @@ export function generateMapColoring(userId: string) {
 
 export function generateRandomPuzzle(userId: string) {
   const generators = [generateSubstitution, generateScytale, generateBookCipher, generateMapColoring];
-  const generator = generators[Math.floor(Math.random() * generators.length)];
+  const generator = generators[crypto.randomInt(generators.length)];
   return generator(userId);
 }
