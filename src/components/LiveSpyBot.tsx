@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Mic, MicOff, Radio, Activity, Volume2, XCircle, Terminal, AlertTriangle } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { motion } from 'motion/react';
+import { Mic, MicOff, Radio, XCircle, AlertTriangle } from 'lucide-react';
 import { GoogleGenAI, LiveServerMessage, Modality } from "@google/genai";
 
 export default function LiveSpyBot({ onClose }: { onClose: () => void }) {
