@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import crypto from 'node:crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -110,8 +111,8 @@ const sentenceStructures = [
   ["LOCK", "SAFEHOUSE", "KEY"]
 ];
 
-for (let i = 0; i < 100; i++) {
-  const structure = sentenceStructures[Math.floor(Math.random() * sentenceStructures.length)];
+for (let i = 0; i < 250; i++) {
+  const structure = sentenceStructures[crypto.randomInt(sentenceStructures.length)];
   const emojis = structure.map(word => emojiMap[word]).join(" ");
   const answer = structure.join(" ");
 
@@ -138,12 +139,12 @@ const actions = ["MEETING", "DROPOFF", "SURVEILLANCE", "INFILTRATION", "EXTRACTI
 const objects = ["BRIEFCASE", "USB DRIVE", "ENVELOPE", "LAPTOP", "PASSPORT"];
 const times = ["08:00", "12:00", "15:30", "21:00", "23:45"];
 
-for (let i = 0; i < 50; i++) {
-  const s = suspects[Math.floor(Math.random() * suspects.length)];
-  const l = locations[Math.floor(Math.random() * locations.length)];
-  const a = actions[Math.floor(Math.random() * actions.length)];
-  const o = objects[Math.floor(Math.random() * objects.length)];
-  const t = times[Math.floor(Math.random() * times.length)];
+for (let i = 0; i < 250; i++) {
+  const s = suspects[crypto.randomInt(suspects.length)];
+  const l = locations[crypto.randomInt(locations.length)];
+  const a = actions[crypto.randomInt(actions.length)];
+  const o = objects[crypto.randomInt(objects.length)];
+  const t = times[crypto.randomInt(times.length)];
 
   const profile = `TARGET: ${s}\nLOCATION: ${l}\nACTION: ${a}\nITEM: ${o}\nTIME: ${t}`;
 
@@ -155,7 +156,7 @@ for (let i = 0; i < 50; i++) {
     { q: "What time did this occur?", a: t }
   ];
 
-  const question = questions[Math.floor(Math.random() * questions.length)];
+  const question = questions[crypto.randomInt(questions.length)];
 
   addPuzzle({
     title: `INTELLIGENCE DEBRIEF: PROFILE ${i + 1}`,
@@ -174,7 +175,22 @@ for (let i = 0; i < 50; i++) {
 // Write to file
 // ---------------------------------------------------------
 
-const outputContent = `export type Category = 'ALL_DATA_FILES' | 'COLD_WAR' | 'CYBER_SECURITY' | 'GCHQ_CLASSIC' | 'SIGNAL_INT' | 'LOGIC_OPS' | 'GEOLOCATION' | 'IMAGE_INT' | 'MI5_101' | 'CODE_BREAKER' | 'INTELLIGENCE_DEBRIEF';
+const dataPath = path.join(__dirname, '../src/data/puzzles.ts');
+let existingContent = '';
+let existingPuzzles: any[] = [];
+try {
+  existingContent = fs.readFileSync(dataPath, 'utf-8');
+  const match = existingContent.match(/export const puzzles: Puzzle\[\] = (\[[\s\S]*\]);/);
+  if (match && match[1]) {
+    existingPuzzles = JSON.parse(match[1]);
+  }
+} catch (e) {
+  // Ignore
+}
+
+const mergedPuzzles = existingPuzzles.concat(puzzles);
+
+const outputContent = `export type Category = 'ALL_DATA_FILES' | 'COLD_WAR' | 'CYBER_SECURITY' | 'GCHQ_CLASSIC' | 'SIGNAL_INT' | 'LOGIC_OPS' | 'GEOLOCATION' | 'IMAGE_INT' | 'MI5_101' | 'CODE_BREAKER' | 'INTELLIGENCE_DEBRIEF' | 'CRYPTOGRAPHY' | 'LINGUISTIC' | 'PATTERN_RECOGNITION' | 'PURE_LOGIC';
 
 export interface Puzzle {
   id: string;
@@ -190,8 +206,8 @@ export interface Puzzle {
   observationData?: string;
 }
 
-export const puzzles: Puzzle[] = ${JSON.stringify(puzzles, null, 2)};
+export const puzzles: Puzzle[] = ${JSON.stringify(mergedPuzzles, null, 2)};
 `;
 
-fs.writeFileSync(path.join(__dirname, '../src/data/puzzles.ts'), outputContent);
-console.log(`Generated ${puzzles.length} missions in src/data/puzzles.ts`);
+fs.writeFileSync(dataPath, outputContent);
+console.log(`Appended ${puzzles.length} missions in src/data/puzzles.ts. Total: ${mergedPuzzles.length}`);

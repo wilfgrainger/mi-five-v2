@@ -1,4 +1,5 @@
 const fs = require('fs');
+const crypto = require('node:crypto');
 
 const categories = ['COLD_WAR', 'CYBER_SECURITY', 'GCHQ_CLASSIC', 'SIGNAL_INT', 'LOGIC_OPS', 'GEOLOCATION'];
 const difficulties = ['EASY', 'MEDIUM', 'HARD', 'ELITE'];
@@ -140,8 +141,14 @@ const cities = [
 for (let i = 0; i < 93; i++) {
   const city = cities[i % cities.length];
   // slightly obfuscate coordinates
-  const lat = parseFloat(city.lat) + (Math.random() * 0.01 - 0.005);
-  const lon = parseFloat(city.lon) + (Math.random() * 0.01 - 0.005);
+  // Use crypto.getRandomValues instead of Math.random
+  const randomBuffer = new Uint32Array(2);
+  crypto.webcrypto.getRandomValues(randomBuffer);
+  // Convert to float between 0 and 1
+  const randLat = randomBuffer[0] / (0xffffffff + 1);
+  const randLon = randomBuffer[1] / (0xffffffff + 1);
+  const lat = parseFloat(city.lat) + (randLat * 0.01 - 0.005);
+  const lon = parseFloat(city.lon) + (randLon * 0.01 - 0.005);
   
   puzzles.push({
     id: `0X_GEN_${idCounter++}`,
@@ -155,7 +162,22 @@ for (let i = 0; i < 93; i++) {
   });
 }
 
-const fileContent = `export type Category = 'ALL_DATA_FILES' | 'COLD_WAR' | 'CYBER_SECURITY' | 'GCHQ_CLASSIC' | 'SIGNAL_INT' | 'LOGIC_OPS' | 'GEOLOCATION';
+const dataPath = 'src/data/puzzles.ts';
+let existingContent = '';
+let existingPuzzles = [];
+try {
+  existingContent = fs.readFileSync(dataPath, 'utf-8');
+  const match = existingContent.match(/export const puzzles: Puzzle\[\] = (\[[\s\S]*\]);/);
+  if (match && match[1]) {
+    existingPuzzles = JSON.parse(match[1]);
+  }
+} catch (e) {
+  // Ignore
+}
+
+const mergedPuzzles = existingPuzzles.concat(puzzles);
+
+const fileContent = `export type Category = 'ALL_DATA_FILES' | 'COLD_WAR' | 'CYBER_SECURITY' | 'GCHQ_CLASSIC' | 'SIGNAL_INT' | 'LOGIC_OPS' | 'GEOLOCATION' | 'IMAGE_INT' | 'MI5_101' | 'CODE_BREAKER' | 'INTELLIGENCE_DEBRIEF' | 'CRYPTOGRAPHY' | 'LINGUISTIC' | 'PATTERN_RECOGNITION' | 'PURE_LOGIC';
 
 export interface Puzzle {
   id: string;
@@ -166,10 +188,13 @@ export interface Puzzle {
   points: number;
   answer: string;
   hint: string;
+  imageUrl?: string;
+  type?: 'STANDARD' | 'MASTERMIND' | 'TRIVIA' | 'EMOJI_CRYPTO' | 'OBSERVATION';
+  observationData?: string;
 }
 
-export const puzzles: Puzzle[] = ${JSON.stringify(puzzles, null, 2)};
+export const puzzles: Puzzle[] = ${JSON.stringify(mergedPuzzles, null, 2)};
 `;
 
-fs.writeFileSync('src/data/puzzles.ts', fileContent);
-console.log('Generated ' + puzzles.length + ' puzzles.');
+fs.writeFileSync(dataPath, fileContent);
+console.log('Appended ' + puzzles.length + ' puzzles in src/data/puzzles.ts. Total: ' + mergedPuzzles.length);
