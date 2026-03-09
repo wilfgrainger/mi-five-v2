@@ -113,6 +113,9 @@ ${intercept}
 - Hint 2: Extract the first letter of each sentence to reveal a hidden string of letters.
 - Hint 3: The string is meaningless on its own, but remember the asset's favorite "classical Roman technique" and the "${shift} steps" mentioned in the briefing.
 
+**6. THE SOLUTION:**
+${place.replace(/ /g, '')}
+
 **7. METHODOLOGY:**
 1. Extract the first letter of each sentence in the intercept to reveal the ciphertext: **${encryptedChars.join('')}**.
 2. The briefing hints at "classical Roman techniques" (Caesar Cipher) and "advancing... ${shift} steps" (a shift of ${shift}).
@@ -201,6 +204,9 @@ ${interceptLines.join('\n')}
 - Hint 2: Each line describes a specific word from the NATO phonetic alphabet.
 - Hint 3: Take the first letter of each phonetic word to spell out a famous British city.
 
+**6. THE SOLUTION:**
+${city}
+
 **7. METHODOLOGY:**
 1. Solve each clue to find the corresponding word in the NATO phonetic alphabet:
 ${methodLines.join('\n')}
@@ -255,6 +261,9 @@ ${displayStatements.join('\n')}
 - Hint 1: Look for two statements that directly contradict each other. One of them *must* be true.
 - Hint 2: Since exactly one person is telling the truth, everyone else must be lying. How does this apply to the contradictory pair?
 - Hint 3: Look at ${roles[3]}. If their statement is a lie, what does that make them?
+
+**6. THE SOLUTION:**
+${moleAgent}
 
 **7. METHODOLOGY:**
 1. Identify the contradiction: ${roles[1]} states that ${roles[2]} is the mole. ${roles[2]} states that ${roles[1]} is lying. These two statements are exact opposites; they cannot both be true, and they cannot both be false.
@@ -326,6 +335,9 @@ Pending Transaction 9: $??.??
 - Hint 1: Ignore the dollar signs and decimals. Look at the numbers as pure two-digit (or three-digit) integers.
 - Hint 2: The sequence is related to numbers that are only divisible by 1 and themselves.
 - Hint 3: Write down the prime numbers starting from ${primes[0]}, and then imagine looking at them in a mirror.
+
+**6. THE SOLUTION:**
+${answerStr}
 
 **7. METHODOLOGY:**
 1. Strip away the financial formatting to reveal the base sequence: ${reversedPrimes.slice(0,8).join(', ')}.

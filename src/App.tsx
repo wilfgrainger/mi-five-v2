@@ -31,6 +31,33 @@ const DIFFICULTY_THRESHOLDS = {
   'ELITE': 1000
 };
 
+type MissionSection = {
+  title: string;
+  content: string;
+};
+
+const parseMissionSections = (description: string): MissionSection[] => {
+  const matches = [...description.matchAll(/\*\*(\d+)\.\s+([^*]+)\*\*:\s*/g)];
+  if (!matches.length) {
+    return [{ title: 'MISSION BRIEF', content: description.replace(/\*\*/g, '').trim() }];
+  }
+
+  return matches.map((match, index) => {
+    const start = (match.index ?? 0) + match[0].length;
+    const end = index + 1 < matches.length ? (matches[index + 1].index ?? description.length) : description.length;
+    return {
+      title: `${match[1]}. ${match[2].trim()}`,
+      content: description.slice(start, end).replace(/\*\*/g, '').trim()
+    };
+  });
+};
+
+const getBriefingPreview = (description: string) => {
+  const sections = parseMissionSections(description);
+  const briefing = sections.find((section) => section.title.toUpperCase().includes('THE BRIEFING'));
+  return (briefing?.content || sections[0]?.content || '').split('\n')[0];
+};
+
 const getRank = (score: number) => {
   let currentRank = RANKS[0].name;
   for (const rank of RANKS) {
@@ -175,24 +202,35 @@ export default function App() {
     ? puzzles 
     : puzzles.filter(p => p.category === activeCategory);
 
+  const missionOrder = (missionId: string) => Number(missionId.split('_').pop()) || Number.MAX_SAFE_INTEGER;
+
   const sortedPuzzles = [...filteredPuzzles].sort((a, b) => {
+    const diffOrder = { 'EASY': 1, 'MEDIUM': 2, 'HARD': 3, 'ELITE': 4 };
+    const aSolved = user?.solvedPuzzles.includes(a.id);
+    const bSolved = user?.solvedPuzzles.includes(b.id);
+
     if (sortBy === 'DIFFICULTY') {
-      const diffOrder = { 'EASY': 1, 'MEDIUM': 2, 'HARD': 3, 'ELITE': 4 };
-      return diffOrder[a.difficulty] - diffOrder[b.difficulty];
+      const byDifficulty = diffOrder[a.difficulty] - diffOrder[b.difficulty];
+      if (byDifficulty !== 0) return byDifficulty;
+      return missionOrder(a.id) - missionOrder(b.id);
     }
     if (sortBy === 'POINTS') {
-      return b.points - a.points;
+      const byPoints = b.points - a.points;
+      if (byPoints !== 0) return byPoints;
+      return missionOrder(a.id) - missionOrder(b.id);
     }
     if (sortBy === 'TITLE') {
-      return a.title.localeCompare(b.title);
+      const byTitle = a.title.localeCompare(b.title);
+      if (byTitle !== 0) return byTitle;
+      return missionOrder(a.id) - missionOrder(b.id);
     }
     if (sortBy === 'STATUS') {
-      const aSolved = user?.solvedPuzzles.includes(a.id);
-      const bSolved = user?.solvedPuzzles.includes(b.id);
-      if (aSolved === bSolved) return 0;
-      return aSolved ? 1 : -1;
+      if (aSolved !== bSolved) return aSolved ? 1 : -1;
+      const byDifficulty = diffOrder[a.difficulty] - diffOrder[b.difficulty];
+      if (byDifficulty !== 0) return byDifficulty;
+      return missionOrder(a.id) - missionOrder(b.id);
     }
-    return 0;
+    return missionOrder(a.id) - missionOrder(b.id);
   });
 
   const visiblePuzzles = sortedPuzzles.slice(0, visibleCount);
@@ -484,7 +522,7 @@ export default function App() {
                           </div>
                         </div>
 
-                        <p className="text-[#a3a3a3] text-base leading-relaxed mb-8 line-clamp-2">{puzzle.description}</p>
+                        <p className="text-[#a3a3a3] text-base leading-relaxed mb-8 line-clamp-3">{getBriefingPreview(puzzle.description)}</p>
 
                         <div className="flex justify-between items-center pt-6 border-t border-white/5">
                           <div>
@@ -554,9 +592,28 @@ export default function App() {
                   {gameMode === 'TRAINING' && <HintButton hint={activePuzzle.hint} />}
                 </div>
 
-                <div className="border-l-4 border-[#3b82f6] pl-6 mb-12 bg-gradient-to-r from-[#3b82f6]/5 to-transparent py-4 rounded-r-2xl">
-                  <p className="text-xs text-[#3b82f6] font-bold tracking-widest mb-3 font-mono">{'>'} MISSION BRIEF:</p>
-                  <p className="text-lg text-[#d4d4d4] font-sans leading-relaxed">{activePuzzle.description}</p>
+                <div className="mb-12 grid gap-4">
+                  <p className="text-xs text-[#3b82f6] font-bold tracking-widest font-mono">{'>'} MISSION BRIEF:</p>
+                  {parseMissionSections(activePuzzle.description)
+                    .filter((section) => {
+                      const isSolved = user.solvedPuzzles.includes(activePuzzle.id);
+                      if (isSolved) return true;
+                      return !section.title.includes('6. THE SOLUTION') && !section.title.includes('7. METHODOLOGY');
+                    })
+                    .map((section) => (
+                      <div
+                        key={section.title}
+                        className="border border-white/10 rounded-2xl bg-gradient-to-r from-[#3b82f6]/5 to-transparent px-5 py-4"
+                      >
+                        <p className="text-[11px] text-[#60a5fa] font-bold tracking-widest uppercase font-mono mb-3">{section.title}</p>
+                        <p className="text-[15px] text-[#d4d4d4] font-sans leading-relaxed whitespace-pre-line">{section.content}</p>
+                      </div>
+                    ))}
+                  {!user.solvedPuzzles.includes(activePuzzle.id) && (
+                    <p className="text-[11px] text-[#737373] font-mono tracking-wide px-1">
+                      Solution and methodology unlock after mission completion.
+                    </p>
+                  )}
                   {activePuzzle.imageUrl && (
                     <div className="mt-6 rounded-xl overflow-hidden border border-white/10 shadow-lg">
                       <img 
