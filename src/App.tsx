@@ -235,9 +235,7 @@ export default function App() {
 
   const visiblePuzzles = sortedPuzzles.slice(0, visibleCount);
 
-  const curatedPool = dedupePuzzlesForQuality(
-    [...puzzles].sort((a, b) => missionOrder(a.id) - missionOrder(b.id))
-  );
+  const curatedPool = [...puzzles].sort((a, b) => missionOrder(a.id) - missionOrder(b.id));
 
   const categoryCounts = curatedPool.reduce((acc, p) => {
     acc[p.category] = (acc[p.category] || 0) + 1;
