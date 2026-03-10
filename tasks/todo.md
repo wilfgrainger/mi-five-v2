@@ -1,0 +1,4 @@
+- [x] Audit existing codebase
+- [x] Determine drift
+- [x] Establish initial Spec
+- [ ] Output Genesis bootstrap message

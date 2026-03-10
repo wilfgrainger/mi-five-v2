@@ -1,0 +1,53 @@
+{
+  "auth": {
+    "request": {
+      "request": { "email": "string" },
+      "response": { "message": "string", "simulatedLink": "string" }
+    },
+    "verify": {
+      "request": { "token": "string" },
+      "response": {
+        "user": { "id": "string", "email": "string", "username": "string", "score": "number", "rank": "string" },
+        "token": "string"
+      }
+    },
+    "logout": {
+      "request": {},
+      "response": { "message": "string" }
+    }
+  },
+  "me": {
+    "get": {
+      "request": {},
+      "response": {
+        "user": { "id": "string", "email": "string", "username": "string", "score": "number", "rank": "string" },
+        "solvedPuzzles": [{ "puzzle_id": "string", "score_earned": "number", "solved_at": "string" }]
+      }
+    },
+    "username": {
+      "request": { "username": "string" },
+      "response": { "message": "string" }
+    }
+  },
+  "puzzles": {
+    "get": {
+      "request": {},
+      "response": {
+        "puzzles": [{ "id": "string", "type": "string", "title": "string", "description": "string", "difficulty": "string", "multiplier": "number", "puzzle_data": "any", "solved": "boolean" }],
+        "history": [{ "id": "string", "type": "string", "title": "string", "description": "string", "difficulty": "string", "multiplier": "number", "puzzle_data": "any", "solved": "boolean" }]
+      }
+    },
+    "solve": {
+      "request": { "answer": "any" },
+      "response": { "correct": "boolean", "scoreEarned": "number", "newRank": "string" }
+    }
+  },
+  "leaderboard": {
+    "get": {
+      "request": {},
+      "response": {
+        "leaderboard": [{ "username": "string", "score": "number", "rank": "string" }]
+      }
+    }
+  }
+}
