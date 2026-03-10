@@ -58,25 +58,6 @@ const getBriefingPreview = (description: string) => {
   return (briefing?.content || sections[0]?.content || '').split('\n')[0];
 };
 
-
-const normalizePuzzleText = (value: string) => value.toUpperCase().replace(/[^A-Z0-9]+/g, ' ').trim();
-
-const dedupePuzzlesForQuality = (input: Puzzle[]) => {
-  const seen = new Set<string>();
-  return input.filter((puzzle) => {
-    const signature = [
-      puzzle.category,
-      normalizePuzzleText(puzzle.title),
-      normalizePuzzleText(getBriefingPreview(puzzle.description)),
-      normalizePuzzleText(puzzle.answer)
-    ].join('|');
-
-    if (seen.has(signature)) return false;
-    seen.add(signature);
-    return true;
-  });
-};
-
 const getRank = (score: number) => {
   let currentRank = RANKS[0].name;
   for (const rank of RANKS) {
@@ -223,11 +204,7 @@ export default function App() {
 
   const missionOrder = (missionId: string) => Number(missionId.split('_').pop()) || Number.MAX_SAFE_INTEGER;
 
-  const qualityFilteredPuzzles = dedupePuzzlesForQuality(
-    [...filteredPuzzles].sort((a, b) => missionOrder(a.id) - missionOrder(b.id))
-  );
-
-  const sortedPuzzles = [...qualityFilteredPuzzles].sort((a, b) => {
+  const sortedPuzzles = [...filteredPuzzles].sort((a, b) => {
     const diffOrder = { 'EASY': 1, 'MEDIUM': 2, 'HARD': 3, 'ELITE': 4 };
     const aSolved = user?.solvedPuzzles.includes(a.id);
     const bSolved = user?.solvedPuzzles.includes(b.id);
