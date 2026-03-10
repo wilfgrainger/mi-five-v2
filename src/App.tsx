@@ -235,7 +235,11 @@ export default function App() {
 
   const visiblePuzzles = sortedPuzzles.slice(0, visibleCount);
 
-  const categoryCounts = puzzles.reduce((acc, p) => {
+  const curatedPool = dedupePuzzlesForQuality(
+    [...puzzles].sort((a, b) => missionOrder(a.id) - missionOrder(b.id))
+  );
+
+  const categoryCounts = curatedPool.reduce((acc, p) => {
     acc[p.category] = (acc[p.category] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
@@ -415,6 +419,7 @@ export default function App() {
                       <span className="text-[8px] opacity-70">HIGH STAKES • NO HELP</span>
                     </button>
                   </div>
+                  <p className="mt-3 text-[10px] text-[#737373] font-mono">Quality filter active: duplicate missions removed for cleaner progression.</p>
                 </div>
 
                 <div>
@@ -428,7 +433,7 @@ export default function App() {
                       onClick={() => setActiveCategory('ALL_DATA_FILES')}
                       className={`px-4 py-2 text-[10px] font-bold tracking-widest rounded-lg border transition-all font-mono ${activeCategory === 'ALL_DATA_FILES' ? 'bg-[#3b82f6]/20 text-[#3b82f6] border-[#3b82f6]/50 shadow-[0_0_10px_rgba(59,130,246,0.1)]' : 'bg-[#111] text-[#a3a3a3] border-white/5 hover:border-white/20 hover:text-white'}`}
                     >
-                      [ GLOBAL_ASSET_REGISTRY // {puzzles.length} ]
+                      [ GLOBAL_ASSET_REGISTRY // {curatedPool.length} ]
                     </button>
                     {Object.entries(categoryCounts).map(([cat, count]) => (
                       <button
