@@ -13,6 +13,7 @@ type User = {
   specialization: string;
   tutorialCompleted?: boolean;
   dailyChallengeCompleted?: string; // date string YYYY-MM-DD
+  streak?: number;
 };
 
 const RANKS = [
@@ -171,12 +172,35 @@ export default function App() {
     // Bonus points for daily challenge (2x points)
     const finalPoints = (isDaily && !alreadyDoneDaily) ? points * 2 : points;
 
+    let newStreak = user.streak || 0;
+    if (isDaily && !alreadyDoneDaily) {
+      if (user.dailyChallengeCompleted) {
+        // Strip time to calculate absolute day difference properly
+        const todayNoTime = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const lastParts = user.dailyChallengeCompleted.split('-').map(Number);
+        // month is 0-indexed in JS dates
+        const lastDateNoTime = new Date(lastParts[0], lastParts[1] - 1, lastParts[2]);
+
+        const diffTime = todayNoTime.getTime() - lastDateNoTime.getTime();
+        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 1) {
+          newStreak += 1;
+        } else {
+          newStreak = 1; // Missed a day, reset to 1
+        }
+      } else {
+        newStreak = 1; // First completion
+      }
+    }
+
     const updatedUser = {
       ...user,
       score: user.score + finalPoints,
       rank: getRank(user.score + finalPoints),
       solvedPuzzles: [...user.solvedPuzzles, puzzleId],
-      dailyChallengeCompleted: isDaily ? dateString : user.dailyChallengeCompleted
+      dailyChallengeCompleted: isDaily ? dateString : user.dailyChallengeCompleted,
+      streak: newStreak
     };
     
     localStorage.setItem('spy_user', JSON.stringify(updatedUser));
@@ -326,6 +350,12 @@ export default function App() {
                   <div className="flex flex-col items-center md:items-start">
                     <p className="text-[10px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">CURRENT_INTELLIGENCE_YIELD</p>
                     <p className="text-xl font-bold tracking-widest text-[#10b981]">{user.score}</p>
+                  </div>
+                  <div className="flex flex-col items-center md:items-start col-span-2 md:col-span-1">
+                    <p className="text-[10px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">ACTIVE_STREAK</p>
+                    <p className="text-xl font-bold tracking-widest text-amber-500 flex items-center gap-1">
+                      <Zap className="w-5 h-5" /> {user.streak || 0} DAYS
+                    </p>
                   </div>
                 </div>
                 
@@ -630,6 +660,7 @@ export default function App() {
                 </div>
 
                 <PuzzleSolver 
+                  key={activePuzzle.id}
                   puzzle={activePuzzle} 
                   isSolved={user.solvedPuzzles.includes(activePuzzle.id)}
                   onSolved={(points) => handleSolve(activePuzzle.id, points)} 
@@ -922,7 +953,9 @@ function HintButton({ hint }: { hint: string }) {
   );
 }
 
-function PuzzleSolver({ puzzle, isSolved, onSolved }: { puzzle: Puzzle, isSolved: boolean, onSolved: (points: number) => void }) {
+function PuzzleSolver({ puzzle, isSolved, onSolved }: { key?: string; puzzle: Puzzle, isSolved: boolean, onSolved: (points: number) => void }) {
+  const [showHint, setShowHint] = useState(false);
+
   if (puzzle.type === 'MASTERMIND') {
     return <MastermindSolver puzzle={puzzle} isSolved={isSolved} onSolved={onSolved} />;
   }
@@ -985,10 +1018,28 @@ function PuzzleSolver({ puzzle, isSolved, onSolved }: { puzzle: Puzzle, isSolved
           )}
         </div>
 
+        {puzzle.hint && (
+          <div className="mt-4 flex justify-center">
+            {!showHint ? (
+              <button
+                type="button"
+                onClick={() => setShowHint(true)}
+                className="text-[10px] text-[#3b82f6] font-mono tracking-widest uppercase hover:underline flex items-center gap-1 opacity-70 hover:opacity-100 transition-opacity"
+              >
+                <Eye className="w-3 h-3" /> REQUEST INTEL (HINT)
+              </button>
+            ) : (
+              <div className="bg-[#3b82f6]/10 border border-[#3b82f6]/20 p-4 rounded-lg text-[11px] text-[#3b82f6] font-mono text-center w-full">
+                <strong>INTEL:</strong> {puzzle.hint}
+              </div>
+            )}
+          </div>
+        )}
+
         <button
           type="submit"
           disabled={isSolved || status === 'checking' || !answer.trim()}
-          className={`w-full py-4 rounded-xl font-bold tracking-widest text-xs flex items-center justify-center gap-3 transition-all font-mono ${
+          className={`w-full py-4 rounded-xl font-bold tracking-widest text-xs flex items-center justify-center gap-3 transition-all font-mono mt-6 ${
             isSolved 
               ? 'bg-[#10b981]/10 text-[#10b981] border border-[#10b981]/30 cursor-default' 
               : status === 'checking'

@@ -37,7 +37,7 @@ export default function Tutorial({ onComplete }: TutorialProps) {
           </div>
         </div>
         <button onClick={skipTutorial} className="text-[10px] text-[#a3a3a3] hover:text-white font-mono tracking-widest border border-white/10 px-3 py-1.5 rounded-md hover:bg-white/5 transition-colors">
-          SKIP_TUTORIAL
+          SKIP
         </button>
       </header>
 
