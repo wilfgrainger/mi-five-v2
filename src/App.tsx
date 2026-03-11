@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Shield, RefreshCw, Download, Upload, LogOut, User as UserIcon, Lock, Unlock, ChevronRight, ArrowLeft, Cpu, Radio, AlertTriangle, CheckCircle2, Share2, Image as ImageIcon, Briefcase, Map, MessageSquare, ScanLine, Zap, Timer, Trophy, Activity, Eye, Target, FileText, Database, Crosshair, ListChecks, ShieldAlert } from 'lucide-react';
+import { Shield, RefreshCw, LogOut, User as UserIcon, Lock, Unlock, ChevronRight, ChevronDown, ArrowLeft, Cpu, AlertTriangle, CheckCircle2, Share2, Image as ImageIcon, Briefcase, Map, MessageSquare, ScanLine, Zap, Timer, Trophy, Activity, Eye, Target, FileText, Database, Crosshair, ListChecks, ShieldAlert } from 'lucide-react';
 import { puzzles, Puzzle, Category } from './data/puzzles';
 import Tutorial from './components/Tutorial';
 
@@ -210,6 +210,8 @@ const getBriefingPreview = (description: string) => {
   const briefing = sections.find((section) => section.title.toUpperCase().includes('THE BRIEFING'));
   return (briefing?.content || sections[0]?.content || '').split('\n')[0];
 };
+
+const formatDisplayName = (text: string) => text.replace(/_/g, ' ');
 
 const getRank = (score: number) => {
   let currentRank = RANKS[0].name;
@@ -435,10 +437,9 @@ export default function App() {
         </div>
         
         <div className="flex items-center gap-3 md:gap-6">
-          <div className="hidden md:flex items-center gap-4 text-[#a3a3a3]">
-            <RefreshCw className="w-4 h-4 hover:text-white cursor-pointer transition-colors" />
-            <Download className="w-4 h-4 hover:text-white cursor-pointer transition-colors" />
-            <Upload className="w-4 h-4 hover:text-white cursor-pointer transition-colors" />
+          <div className="hidden md:flex items-center gap-2 bg-[#111] border border-white/5 rounded-xl px-3 py-1.5">
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#10b981]" />
+            <span className="text-[10px] font-bold font-mono text-[#10b981] tracking-widest">{user.solvedPuzzles.length}<span className="text-[#555]">/{puzzles.length}</span></span>
           </div>
           <div className="text-right hidden sm:block">
             <p className="text-xs font-bold text-white tracking-widest">{user.username}</p>
@@ -517,6 +518,29 @@ export default function App() {
                 >
                   <Share2 className="w-4 h-4" /> SHARE PROGRESS
                 </button>
+
+                {/* Next Rank Progress */}
+                {(() => {
+                  const nextRank = RANKS.find(r => r.threshold > user.score);
+                  const currentRankData = [...RANKS].reverse().find(r => r.threshold <= user.score) || RANKS[0];
+                  if (!nextRank) return (
+                    <div className="w-full mt-4 p-3 bg-[#10b981]/10 border border-[#10b981]/20 rounded-xl text-center">
+                      <p className="text-[10px] font-bold text-[#10b981] tracking-widest font-mono">MAX RANK ACHIEVED — 00 STATUS</p>
+                    </div>
+                  );
+                  const progress = Math.round(((user.score - currentRankData.threshold) / (nextRank.threshold - currentRankData.threshold)) * 100);
+                  return (
+                    <div className="w-full mt-4 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[9px] font-mono text-[#555] tracking-widest uppercase">RANK PROGRESS</span>
+                        <span className="text-[9px] font-mono text-[#3b82f6] tracking-widest">{user.score} / {nextRank.threshold} → {nextRank.name}</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-[#1a1a1a] rounded-full overflow-hidden border border-white/5">
+                        <div className="h-full bg-gradient-to-r from-[#2563eb] to-[#3b82f6] rounded-full transition-all duration-500" style={{ width: `${progress}%` }}></div>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Daily Challenge Section */}
@@ -582,6 +606,11 @@ export default function App() {
                   <div className="flex items-center gap-4 mb-4">
                     <p className="text-[10px] text-[#3b82f6] tracking-widest uppercase font-mono">OPERATIONAL_THEATRE_REGISTRY</p>
                     <div className="h-[1px] flex-1 bg-white/5"></div>
+                    <div className="flex items-center gap-1.5 bg-[#111] border border-white/5 rounded-lg px-2.5 py-1">
+                      <CheckCircle2 className="w-3 h-3 text-[#10b981]" />
+                      <span className="text-[9px] font-mono font-bold text-[#10b981] tracking-widest">{user.solvedPuzzles.length}</span>
+                      <span className="text-[9px] font-mono text-[#555]">/ {puzzles.length} SOLVED</span>
+                    </div>
                   </div>
                   <div className="flex gap-3">
                     <button
@@ -621,7 +650,7 @@ export default function App() {
                         onClick={() => setActiveCategory(cat as Category)}
                         className={`px-4 py-2 text-[10px] font-bold tracking-widest rounded-lg border transition-all font-mono ${activeCategory === cat ? 'bg-[#3b82f6]/20 text-[#3b82f6] border-[#3b82f6]/50 shadow-[0_0_10px_rgba(59,130,246,0.1)]' : 'bg-[#111] text-[#a3a3a3] border-white/5 hover:border-white/20 hover:text-white'}`}
                       >
-                        [ {cat.replace('_', ' ')} // {count} ]
+                        [ {formatDisplayName(cat)} // {count} ]
                       </button>
                     ))}
                   </div>
@@ -654,6 +683,15 @@ export default function App() {
 
               {/* Puzzle Grid */}
               <div className="flex flex-col gap-6">
+                {visiblePuzzles.length === 0 && (
+                  <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-[#111] border border-white/5 flex items-center justify-center opacity-40">
+                      <FileText className="w-8 h-8 text-[#555]" />
+                    </div>
+                    <p className="text-sm font-bold tracking-widest text-[#555] font-mono uppercase">NO MISSIONS IN THIS CATEGORY</p>
+                    <button onClick={() => setActiveCategory('ALL_DATA_FILES')} className="text-[10px] text-[#3b82f6] font-mono tracking-widest hover:underline">VIEW ALL MISSIONS</button>
+                  </div>
+                )}
                 {visiblePuzzles.map((puzzle) => {
                   const isSolved = user.solvedPuzzles.includes(puzzle.id);
                   const isLocked = user.score < DIFFICULTY_THRESHOLDS[puzzle.difficulty] && !isSolved;
@@ -665,7 +703,7 @@ export default function App() {
                     <motion.div
                       key={puzzle.id}
                       whileHover={!isLocked ? { scale: 1.01, x: 4 } : {}}
-                      className={`bg-[#111] border ${isSolved ? 'border-[#10b981]/30' : isLocked ? 'border-white/5 opacity-75' : 'border-white/10'} rounded-3xl p-8 flex gap-8 relative overflow-hidden group transition-all duration-300 ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                      className={`bg-[#111] border ${isSolved ? 'border-[#10b981]/30' : isLocked ? 'border-white/5 opacity-75' : 'border-white/10'} rounded-3xl p-4 md:p-8 flex gap-4 md:gap-8 relative overflow-hidden group transition-all duration-300 ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                       onClick={() => { if (!isLocked) { setActivePuzzle(puzzle); setView('puzzle'); } }}
                     >
                       {puzzle.id === dailyChallengeId && (
@@ -740,7 +778,7 @@ export default function App() {
                     onClick={() => setVisibleCount(prev => prev + 12)}
                     className="px-8 py-4 bg-[#111] border border-white/10 hover:border-[#3b82f6]/50 text-[#a3a3a3] hover:text-white rounded-2xl text-xs font-bold tracking-widest transition-all flex items-center gap-3 hover:shadow-[0_0_20px_rgba(59,130,246,0.15)] font-mono"
                   >
-                    <RefreshCw className="w-4 h-4" /> SHOW MORE MISSIONS
+                    <ChevronDown className="w-4 h-4" /> SHOW MORE MISSIONS
                   </button>
                 </div>
               )}
@@ -844,18 +882,16 @@ export default function App() {
           <Briefcase className="w-6 h-6" />
           <span className="text-[9px] font-bold tracking-widest font-mono">MISSIONS</span>
         </button>
-        <button 
-          className="flex flex-col items-center gap-1 text-[#555] opacity-50 cursor-not-allowed"
-        >
+        <div className="flex flex-col items-center gap-1 text-[#333] relative">
           <Map className="w-6 h-6" />
           <span className="text-[9px] font-bold tracking-widest font-mono">MAP</span>
-        </button>
-        <button 
-          className="flex flex-col items-center gap-1 text-[#555] opacity-50 cursor-not-allowed"
-        >
+          <span className="absolute -top-1 -right-2 text-[7px] font-bold font-mono text-[#eab308] bg-[#eab308]/10 border border-[#eab308]/20 px-1 rounded">SOON</span>
+        </div>
+        <div className="flex flex-col items-center gap-1 text-[#333] relative">
           <MessageSquare className="w-6 h-6" />
           <span className="text-[9px] font-bold tracking-widest font-mono">COMMS</span>
-        </button>
+          <span className="absolute -top-1 -right-2 text-[7px] font-bold font-mono text-[#eab308] bg-[#eab308]/10 border border-[#eab308]/20 px-1 rounded">SOON</span>
+        </div>
       </div>
 
       <AnimatePresence>
@@ -864,9 +900,40 @@ export default function App() {
   );
 }
 
+function SolverStatusBadge({ status }: { status: 'idle' | 'checking' | 'correct' | 'incorrect' }) {
+  const isCorrect = status === 'correct';
+  const isChecking = status === 'checking';
+  return (
+    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md border ${isCorrect ? 'bg-[#10b981]/10 border-[#10b981]/30' : 'bg-[#3b82f6]/10 border-[#3b82f6]/30'}`}>
+      <span className={`text-[9px] font-bold tracking-widest font-mono ${isCorrect ? 'text-[#10b981]' : 'text-[#3b82f6]'}`}>
+        {isCorrect ? 'SOLVED' : isChecking ? 'VERIFYING' : 'READY'}
+      </span>
+      <Cpu className={`w-3 h-3 ${isCorrect ? 'text-[#10b981]' : 'text-[#3b82f6]'}`} />
+    </div>
+  );
+}
+
+function SuccessBanner({ message, points }: { message: string; points: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      className="mb-6 flex items-center justify-between gap-3 bg-[#10b981]/10 border border-[#10b981]/30 px-5 py-4 rounded-xl"
+    >
+      <div className="flex items-center gap-3">
+        <CheckCircle2 className="w-5 h-5 text-[#10b981] shrink-0" />
+        <span className="text-xs font-bold tracking-widest text-[#10b981] font-mono uppercase">{message}</span>
+      </div>
+      <span className="text-sm font-black font-mono text-[#10b981]">+{points} pts</span>
+    </motion.div>
+  );
+}
+
 function EmojiCryptoSolver({ puzzle, isSolved, onSolved }: { puzzle: Puzzle, isSolved: boolean, onSolved: (points: number) => void }) {
   const [answer, setAnswer] = useState('');
   const [status, setStatus] = useState<'idle' | 'checking' | 'correct' | 'incorrect'>(isSolved ? 'correct' : 'idle');
+  const [justSolved, setJustSolved] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -876,6 +943,7 @@ function EmojiCryptoSolver({ puzzle, isSolved, onSolved }: { puzzle: Puzzle, isS
     setTimeout(() => {
       if (answer.trim().toUpperCase() === puzzle.answer.toUpperCase()) {
         setStatus('correct');
+        setJustSolved(true);
         onSolved(puzzle.points);
       } else {
         setStatus('incorrect');
@@ -886,12 +954,12 @@ function EmojiCryptoSolver({ puzzle, isSolved, onSolved }: { puzzle: Puzzle, isS
 
   return (
     <div className="bg-[#050505] border border-white/10 rounded-2xl p-6 md:p-8 relative shadow-inner">
+      <AnimatePresence>
+        {justSolved && <SuccessBanner message="DECRYPTION SUCCESSFUL" points={puzzle.points} />}
+      </AnimatePresence>
       <div className="flex justify-between items-center mb-6">
         <span className="text-[10px] text-[#a3a3a3] font-bold tracking-widest font-mono uppercase">EMOJI DECRYPTION PROTOCOL</span>
-        <div className="flex items-center gap-2 bg-[#3b82f6]/10 px-3 py-1.5 rounded-md border border-[#3b82f6]/30">
-          <span className="text-[9px] text-[#3b82f6] font-bold tracking-widest font-mono">READY</span>
-          <Cpu className="w-3 h-3 text-[#3b82f6]" />
-        </div>
+        <SolverStatusBadge status={status} />
       </div>
 
       <div className="mb-8 p-6 bg-[#111] border border-white/5 rounded-xl text-center">
@@ -1121,6 +1189,7 @@ function PuzzleSolver({ puzzle, isSolved, onSolved }: { key?: string; puzzle: Pu
 
   const [answer, setAnswer] = useState('');
   const [status, setStatus] = useState<'idle' | 'checking' | 'correct' | 'incorrect'>(isSolved ? 'correct' : 'idle');
+  const [justSolved, setJustSolved] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -1132,6 +1201,7 @@ function PuzzleSolver({ puzzle, isSolved, onSolved }: { key?: string; puzzle: Pu
     setTimeout(() => {
       if (answer.trim().toUpperCase() === puzzle.answer.toUpperCase()) {
         setStatus('correct');
+        setJustSolved(true);
         onSolved(puzzle.points);
       } else {
         setStatus('incorrect');
@@ -1142,12 +1212,12 @@ function PuzzleSolver({ puzzle, isSolved, onSolved }: { key?: string; puzzle: Pu
 
   return (
     <div className="bg-[#050505] border border-white/10 rounded-2xl p-6 md:p-8 relative shadow-inner">
+      <AnimatePresence>
+        {justSolved && <SuccessBanner message="MISSION ACCOMPLISHED" points={puzzle.points} />}
+      </AnimatePresence>
       <div className="flex justify-between items-center mb-6">
         <span className="text-[10px] text-[#a3a3a3] font-bold tracking-widest font-mono uppercase">ENTER YOUR ANSWER</span>
-        <div className="flex items-center gap-2 bg-[#3b82f6]/10 px-3 py-1.5 rounded-md border border-[#3b82f6]/30">
-          <span className="text-[9px] text-[#3b82f6] font-bold tracking-widest font-mono">READY</span>
-          <Cpu className="w-3 h-3 text-[#3b82f6]" />
-        </div>
+        <SolverStatusBadge status={status} />
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -1254,6 +1324,12 @@ function Onboarding({ onLogin }: { onLogin: (username: string, ageGroup: string,
             <div className="text-center mb-10">
               <h1 className="text-2xl font-bold tracking-widest mb-2 text-white font-sans uppercase">SPY ACADEMY</h1>
               <p className="text-[10px] text-[#3b82f6] tracking-widest font-mono uppercase">New Agent Sign-up // Level 1</p>
+              <div className="flex items-center justify-center gap-2 mt-4">
+                {[1, 2, 3].map(s => (
+                  <div key={s} className={`h-1 rounded-full transition-all duration-300 ${s === step ? 'w-8 bg-[#3b82f6]' : s < step ? 'w-4 bg-[#10b981]' : 'w-4 bg-[#333]'}`}></div>
+                ))}
+              </div>
+              <p className="text-[9px] text-[#555] font-mono tracking-widest mt-2">STEP {step} OF 3</p>
             </div>
 
             <form onSubmit={handleNext} className="space-y-6">
@@ -1284,7 +1360,7 @@ function Onboarding({ onLogin }: { onLogin: (username: string, ageGroup: string,
                         onClick={() => setAgeGroup(age)}
                         className={`w-full p-4 rounded-xl border text-left font-mono font-bold tracking-widest text-xs transition-all ${ageGroup === age ? 'bg-[#3b82f6]/10 border-[#3b82f6] text-[#3b82f6] shadow-[0_0_15px_rgba(59,130,246,0.1)]' : 'bg-[#111] border-white/5 text-[#a3a3a3] hover:border-white/20 hover:text-white'}`}
                       >
-                        [ {age.replace('_', ' ')} ]
+                        [ {formatDisplayName(age)} ]
                       </button>
                     ))}
                   </motion.div>
@@ -1300,7 +1376,7 @@ function Onboarding({ onLogin }: { onLogin: (username: string, ageGroup: string,
                         onClick={() => setSpecialization(spec)}
                         className={`w-full p-4 rounded-xl border text-left font-mono font-bold tracking-widest text-xs transition-all ${specialization === spec ? 'bg-[#3b82f6]/10 border-[#3b82f6] text-[#3b82f6] shadow-[0_0_15px_rgba(59,130,246,0.1)]' : 'bg-[#111] border-white/5 text-[#a3a3a3] hover:border-white/20 hover:text-white'}`}
                       >
-                        [ {spec.replace('_', ' ')} ]
+                        [ {formatDisplayName(spec)} ]
                       </button>
                     ))}
                   </motion.div>
