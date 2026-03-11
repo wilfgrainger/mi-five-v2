@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Shield, RefreshCw, Download, Upload, LogOut, User as UserIcon, Lock, Unlock, ChevronRight, ArrowLeft, Cpu, Radio, AlertTriangle, CheckCircle2, Share2, Image as ImageIcon, Briefcase, Map, MessageSquare, ScanLine, Zap, Timer, Trophy, Activity, Eye } from 'lucide-react';
+import { Shield, RefreshCw, Download, Upload, LogOut, User as UserIcon, Lock, Unlock, ChevronRight, ArrowLeft, Cpu, Radio, AlertTriangle, CheckCircle2, Share2, Image as ImageIcon, Briefcase, Map, MessageSquare, ScanLine, Zap, Timer, Trophy, Activity, Eye, Target, FileText, Database, Crosshair, ListChecks, ShieldAlert } from 'lucide-react';
 import { puzzles, Puzzle, Category } from './data/puzzles';
 import Tutorial from './components/Tutorial';
 
@@ -51,6 +51,140 @@ const parseMissionSections = (description: string): MissionSection[] => {
       content: description.slice(start, end).replace(/\*\*/g, '').trim()
     };
   });
+};
+
+const MissionSectionCard = ({ section, ...props }: { section: MissionSection; [key: string]: any }) => {
+  const upperTitle = section.title.toUpperCase();
+
+  // Default values
+  let Icon = FileText;
+  let colorTheme = {
+    bg: 'bg-gradient-to-r from-[#3b82f6]/5 to-transparent',
+    border: 'border-[#3b82f6]/20',
+    iconBg: 'bg-[#3b82f6]/10',
+    iconText: 'text-[#3b82f6]',
+    title: 'text-[#60a5fa]',
+    accent: 'border-[#3b82f6]/50'
+  };
+  let layoutClass = 'col-span-1 md:col-span-2';
+
+  // Customize based on section title keywords
+  if (upperTitle.includes('THE TARGET')) {
+    Icon = Target;
+    colorTheme = {
+      bg: 'bg-gradient-to-r from-[#ef4444]/5 to-transparent',
+      border: 'border-[#ef4444]/20',
+      iconBg: 'bg-[#ef4444]/10',
+      iconText: 'text-[#ef4444]',
+      title: 'text-[#f87171]',
+      accent: 'border-[#ef4444]/50'
+    };
+    layoutClass = 'col-span-1';
+  } else if (upperTitle.includes('OBJECTIVE') || upperTitle.includes('THE OBJECTIVE')) {
+    Icon = ListChecks;
+    colorTheme = {
+      bg: 'bg-gradient-to-r from-[#10b981]/5 to-transparent',
+      border: 'border-[#10b981]/20',
+      iconBg: 'bg-[#10b981]/10',
+      iconText: 'text-[#10b981]',
+      title: 'text-[#34d399]',
+      accent: 'border-[#10b981]/50'
+    };
+    layoutClass = 'col-span-1';
+  } else if (upperTitle.includes('THE BRIEFING')) {
+    Icon = Briefcase;
+    layoutClass = 'col-span-1 md:col-span-2';
+  } else if (upperTitle.includes('INTEL') || upperTitle.includes('DATA')) {
+    Icon = Database;
+    colorTheme = {
+      bg: 'bg-gradient-to-r from-[#eab308]/5 to-transparent',
+      border: 'border-[#eab308]/20',
+      iconBg: 'bg-[#eab308]/10',
+      iconText: 'text-[#eab308]',
+      title: 'text-[#fbbf24]',
+      accent: 'border-[#eab308]/50'
+    };
+    layoutClass = 'col-span-1 md:col-span-2';
+  } else if (upperTitle.includes('THREAT') || upperTitle.includes('WARNING')) {
+    Icon = ShieldAlert;
+    colorTheme = {
+      bg: 'bg-gradient-to-r from-[#f97316]/5 to-transparent',
+      border: 'border-[#f97316]/20',
+      iconBg: 'bg-[#f97316]/10',
+      iconText: 'text-[#f97316]',
+      title: 'text-[#fb923c]',
+      accent: 'border-[#f97316]/50'
+    };
+    layoutClass = 'col-span-1 md:col-span-2';
+  }
+
+  // Parse lists out of content (e.g., lines starting with "-" or "*")
+  const lines = section.content.split('\n');
+  const renderedContent = [];
+  let currentList: string[] = [];
+
+  const flushList = () => {
+    if (currentList.length > 0) {
+      renderedContent.push(
+        <ul key={`list-${renderedContent.length}`} className="space-y-2 mb-4 mt-2">
+          {currentList.map((item, idx) => (
+            <li key={idx} className="flex items-start gap-3">
+              <Crosshair className={`w-4 h-4 mt-0.5 shrink-0 ${colorTheme.iconText} opacity-70`} />
+              <span className="text-[14px] text-[#d4d4d4] font-sans leading-relaxed">{item.replace(/^[-*]\s*/, '')}</span>
+            </li>
+          ))}
+        </ul>
+      );
+      currentList = [];
+    }
+  };
+
+  lines.forEach((line, idx) => {
+    const trimmed = line.trim();
+    if (trimmed.startsWith('-') || trimmed.startsWith('*')) {
+      currentList.push(trimmed);
+    } else {
+      flushList();
+      if (trimmed) {
+        renderedContent.push(
+          <p key={`p-${idx}`} className="text-[15px] text-[#d4d4d4] font-sans leading-relaxed mb-4 last:mb-0 whitespace-pre-line">
+            {trimmed}
+          </p>
+        );
+      }
+    }
+  });
+  flushList();
+
+  return (
+    <div className={`relative bg-[#0a0a0a] border ${colorTheme.border} rounded-2xl overflow-hidden shadow-lg group ${layoutClass}`}>
+      {/* Accent Top Border */}
+      <div className={`absolute top-0 left-0 w-full h-[2px] border-t-2 ${colorTheme.accent} opacity-50`}></div>
+
+      {/* Inner Gradient Background */}
+      <div className={`absolute inset-0 ${colorTheme.bg} pointer-events-none opacity-50`}></div>
+
+      <div className="relative p-5 md:p-6 flex flex-col h-full z-10">
+        <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/5">
+          <div className={`p-2 rounded-lg ${colorTheme.iconBg} border ${colorTheme.border}`}>
+            <Icon className={`w-5 h-5 ${colorTheme.iconText}`} />
+          </div>
+          <h3 className={`text-xs ${colorTheme.title} font-bold tracking-widest uppercase font-mono`}>
+            {section.title}
+          </h3>
+        </div>
+
+        <div className="flex-1">
+          {renderedContent.length > 0 ? renderedContent : <p className="text-[15px] text-[#d4d4d4] font-sans leading-relaxed">{section.content}</p>}
+        </div>
+
+        {/* Subtle decorative bottom-right corner element */}
+        <div className="absolute bottom-0 right-0 p-2 opacity-10 pointer-events-none">
+          <Icon className={`w-24 h-24 ${colorTheme.iconText} -mr-6 -mb-6`} />
+        </div>
+      </div>
+    </div>
+  );
 };
 
 const getBriefingPreview = (description: string) => {
@@ -625,27 +759,28 @@ export default function App() {
                   {gameMode === 'TRAINING' && <HintButton hint={activePuzzle.hint} />}
                 </div>
 
-                <div className="mb-12 grid gap-4">
-                  <p className="text-xs text-[#3b82f6] font-bold tracking-widest font-mono">{'>'} MISSION BRIEF:</p>
-                  {parseMissionSections(activePuzzle.description)
-                    .filter((section) => {
-                      const isSolved = user.solvedPuzzles.includes(activePuzzle.id);
-                      if (isSolved) return true;
-                      return !section.title.includes('6. THE SOLUTION') && !section.title.includes('7. METHODOLOGY');
-                    })
-                    .map((section) => (
-                      <div
-                        key={section.title}
-                        className="border border-white/10 rounded-2xl bg-gradient-to-r from-[#3b82f6]/5 to-transparent px-5 py-4"
-                      >
-                        <p className="text-[11px] text-[#60a5fa] font-bold tracking-widest uppercase font-mono mb-3">{section.title}</p>
-                        <p className="text-[15px] text-[#d4d4d4] font-sans leading-relaxed whitespace-pre-line">{section.content}</p>
-                      </div>
-                    ))}
+                <div className="mb-12">
+                  <p className="text-xs text-[#3b82f6] font-bold tracking-widest font-mono mb-4">{'>'} INTELLIGENCE BRIEFING DOSSIER</p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {parseMissionSections(activePuzzle.description)
+                      .filter((section) => {
+                        const isSolved = user.solvedPuzzles.includes(activePuzzle.id);
+                        if (isSolved) return true;
+                        return !section.title.includes('6. THE SOLUTION') && !section.title.includes('7. METHODOLOGY');
+                      })
+                      .map((section) => (
+                        <MissionSectionCard key={section.title} section={section} />
+                      ))}
+                  </div>
+
                   {!user.solvedPuzzles.includes(activePuzzle.id) && (
-                    <p className="text-[11px] text-[#737373] font-mono tracking-wide px-1">
-                      Solution and methodology unlock after mission completion.
-                    </p>
+                    <div className="mt-4 flex items-center gap-2 bg-[#111] border border-white/5 p-4 rounded-xl">
+                      <Lock className="w-4 h-4 text-[#737373]" />
+                      <p className="text-[11px] text-[#737373] font-mono tracking-wide">
+                        Solution and methodology classified until mission completion.
+                      </p>
+                    </div>
                   )}
                   {activePuzzle.imageUrl && (
                     <div className="mt-6 rounded-xl overflow-hidden border border-white/10 shadow-lg">
