@@ -152,6 +152,7 @@ function Module2({ onComplete, subStep, setSubStep }: any) {
 // Module 3: Codebreaking
 function Module3({ onComplete, subStep, setSubStep }: any) {
   const [answer, setAnswer] = useState('');
+  const [error, setError] = useState(false);
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 flex flex-col p-6">
@@ -173,17 +174,20 @@ function Module3({ onComplete, subStep, setSubStep }: any) {
         <input
           type="text"
           value={answer}
-          onChange={(e) => setAnswer(e.target.value.toUpperCase())}
+          onChange={(e) => { setAnswer(e.target.value.toUpperCase()); setError(false); }}
           placeholder="ENTER PLAINTEXT"
-          className="w-full max-w-xs bg-[#111] border-2 border-white/10 focus:border-[#3b82f6] rounded-xl p-4 text-center text-xl font-bold tracking-widest text-white font-mono outline-none"
+          className={`w-full max-w-xs bg-[#111] border-2 ${error ? 'border-[#ef4444]' : 'border-white/10 focus:border-[#3b82f6]'} rounded-xl p-4 text-center text-xl font-bold tracking-widest text-white font-mono outline-none`}
         />
+        {error && (
+          <p className="mt-3 text-[10px] text-[#ef4444] font-mono tracking-widest uppercase font-bold">INCORRECT DECRYPTION. TRY AGAIN!</p>
+        )}
       </div>
 
       <div className="mt-auto pt-6 pb-safe">
         <button 
           onClick={() => {
             if (answer === 'HELLO') onComplete();
-            else alert("Incorrect decryption. Try again.");
+            else setError(true);
           }}
           className="w-full py-4 bg-[#3b82f6] text-white rounded-xl font-bold tracking-widest text-xs"
         >
