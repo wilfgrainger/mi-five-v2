@@ -118,19 +118,25 @@ const MissionSectionCard = ({ section, ...props }: { section: MissionSection; [k
     layoutClass = 'col-span-1 md:col-span-2';
   }
 
-  // Parse lists out of content (e.g., lines starting with "-" or "*")
+  // Parse lists out of content (e.g., lines starting with "-", "*", or "1.")
   const lines = section.content.split('\n');
   const renderedContent = [];
-  let currentList: string[] = [];
+  let currentList: { text: string; number?: string }[] = [];
 
   const flushList = () => {
     if (currentList.length > 0) {
       renderedContent.push(
-        <ul key={`list-${renderedContent.length}`} className="space-y-2 mb-4 mt-2">
+        <ul key={`list-${renderedContent.length}`} className="space-y-3 mb-5 mt-3">
           {currentList.map((item, idx) => (
             <li key={idx} className="flex items-start gap-3">
-              <Crosshair className={`w-4 h-4 mt-0.5 shrink-0 ${colorTheme.iconText} opacity-70`} />
-              <span className="text-[14px] text-[#d4d4d4] font-sans leading-relaxed">{item.replace(/^[-*]\s*/, '')}</span>
+              {item.number ? (
+                <div className={`mt-[2px] w-5 h-5 shrink-0 rounded-full flex items-center justify-center bg-[#111] border ${colorTheme.border}`}>
+                  <span className={`text-[10px] font-mono font-bold ${colorTheme.title}`}>{item.number}</span>
+                </div>
+              ) : (
+                <Crosshair className={`w-4 h-4 mt-1 shrink-0 ${colorTheme.iconText} opacity-70`} />
+              )}
+              <span className="text-[14.5px] text-[#d4d4d4] font-sans leading-relaxed flex-1">{item.text}</span>
             </li>
           ))}
         </ul>
@@ -141,13 +147,25 @@ const MissionSectionCard = ({ section, ...props }: { section: MissionSection; [k
 
   lines.forEach((line, idx) => {
     const trimmed = line.trim();
+
+    // Check for bullet points (- or *)
     if (trimmed.startsWith('-') || trimmed.startsWith('*')) {
-      currentList.push(trimmed);
-    } else {
+      currentList.push({ text: trimmed.replace(/^[-*]\s*/, '') });
+    }
+    // Check for numbered lists (e.g., "1. ", "2. ")
+    else if (/^\d+\.\s/.test(trimmed)) {
+      const match = trimmed.match(/^(\d+)\.\s(.*)/);
+      if (match) {
+        currentList.push({ number: match[1], text: match[2] });
+      } else {
+        currentList.push({ text: trimmed });
+      }
+    }
+    else {
       flushList();
       if (trimmed) {
         renderedContent.push(
-          <p key={`p-${idx}`} className="text-[15px] text-[#d4d4d4] font-sans leading-relaxed mb-4 last:mb-0 whitespace-pre-line">
+          <p key={`p-${idx}`} className="text-[15px] text-[#e5e5e5] font-sans leading-relaxed mb-4 last:mb-0 whitespace-pre-line">
             {trimmed}
           </p>
         );
