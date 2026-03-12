@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Shield, RefreshCw, LogOut, User as UserIcon, Lock, Unlock, ChevronRight, ChevronDown, ArrowLeft, Cpu, AlertTriangle, CheckCircle2, Share2, Image as ImageIcon, Briefcase, Map, MessageSquare, ScanLine, Zap, Timer, Trophy, Activity, Eye, Target, FileText, Database, Crosshair, ListChecks, ShieldAlert } from 'lucide-react';
+import { Shield, RefreshCw, LogOut, User as UserIcon, Lock, Unlock, ChevronRight, ChevronDown, ArrowLeft, Cpu, AlertTriangle, CheckCircle2, Share2, Image as ImageIcon, Briefcase, Map, MessageSquare, ScanLine, Zap, Timer, Trophy, Activity, Eye, Target, FileText, Database, Crosshair, ListChecks, ShieldAlert, Medal, Star, BarChart2 } from 'lucide-react';
 import { puzzles, Puzzle, Category } from './data/puzzles';
 import Tutorial from './components/Tutorial';
 
@@ -30,6 +30,15 @@ const DIFFICULTY_THRESHOLDS = {
   'MEDIUM': 100,
   'HARD': 500,
   'ELITE': 1000
+};
+
+const DAILY_CHALLENGE_MULTIPLIER = 2;
+
+const SPEC_CATEGORY_MAP: Record<string, Category[]> = {
+  CRYPTOGRAPHY: ['CRYPTOGRAPHY', 'CODE_BREAKER', 'GCHQ_CLASSIC'],
+  CYBER_SECURITY: ['CYBER_SECURITY'],
+  FIELD_OPS: ['MI5_101', 'COLD_WAR', 'INTELLIGENCE_DEBRIEF', 'GEOLOCATION'],
+  SIGNAL_INT: ['SIGNAL_INT', 'GCHQ_CLASSIC'],
 };
 
 type MissionSection = {
@@ -225,7 +234,7 @@ const getRank = (score: number) => {
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
-  const [view, setView] = useState<'dashboard' | 'puzzle'>('dashboard');
+  const [view, setView] = useState<'dashboard' | 'puzzle' | 'leaderboard'>('dashboard');
   const [activePuzzle, setActivePuzzle] = useState<Puzzle | null>(null);
   const [activeCategory, setActiveCategory] = useState<Category | 'ALL_DATA_FILES'>('ALL_DATA_FILES');
   const [gameMode, setGameMode] = useState<'TRAINING' | 'CHALLENGE'>('TRAINING');
@@ -324,7 +333,7 @@ export default function App() {
     const alreadyDoneDaily = user.dailyChallengeCompleted === dateString;
     
     // Bonus points for daily challenge (2x points)
-    const finalPoints = (isDaily && !alreadyDoneDaily) ? points * 2 : points;
+    const finalPoints = (isDaily && !alreadyDoneDaily) ? points * DAILY_CHALLENGE_MULTIPLIER : points;
 
     let newStreak = user.streak || 0;
     if (isDaily && !alreadyDoneDaily) {
@@ -460,6 +469,12 @@ export default function App() {
           >
             OPERATIONAL_THEATRE
           </button>
+          <button
+            className={`flex-1 px-4 py-2 text-xs font-bold tracking-widest rounded-lg transition-all font-mono ${view === 'leaderboard' ? 'bg-[#eab308]/20 text-[#eab308] shadow-sm' : 'text-[#a3a3a3] hover:text-white hover:bg-white/5'}`}
+            onClick={() => { setView('leaderboard'); setActivePuzzle(null); }}
+          >
+            LEADERBOARD
+          </button>
         </div>
       </div>
 
@@ -572,7 +587,7 @@ export default function App() {
                     </div>
                     <div className="flex items-center gap-3">
                       <Trophy className="w-5 h-5 text-[#eab308]" />
-                      <span className="text-sm font-bold font-mono text-white tracking-widest">+{puzzles.find(p => p.id === dailyChallengeId)?.points ? puzzles.find(p => p.id === dailyChallengeId)!.points * 2 : 0}</span>
+                      <span className="text-sm font-bold font-mono text-white tracking-widest">+{puzzles.find(p => p.id === dailyChallengeId)?.points ? puzzles.find(p => p.id === dailyChallengeId)!.points * DAILY_CHALLENGE_MULTIPLIER : 0}</span>
                       <span className="text-[10px] text-[#555] font-mono uppercase tracking-widest">POTENTIAL YIELD</span>
                     </div>
                   </div>
@@ -698,12 +713,14 @@ export default function App() {
                   const difficultyColor = puzzle.difficulty === 'EASY' ? 'text-[#10b981] border-[#10b981]/30' :
                                           puzzle.difficulty === 'MEDIUM' ? 'text-[#eab308] border-[#eab308]/30' :
                                           'text-[#ef4444] border-[#ef4444]/30';
+                  const isRecommended = !isSolved && !isLocked && user?.specialization &&
+                    SPEC_CATEGORY_MAP[user.specialization]?.includes(puzzle.category);
 
                   return (
                     <motion.div
                       key={puzzle.id}
                       whileHover={!isLocked ? { scale: 1.01, x: 4 } : {}}
-                      className={`bg-[#111] border ${isSolved ? 'border-[#10b981]/30' : isLocked ? 'border-white/5 opacity-75' : 'border-white/10'} rounded-3xl p-4 md:p-8 flex gap-4 md:gap-8 relative overflow-hidden group transition-all duration-300 ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                      className={`bg-[#111] border ${isSolved ? 'border-[#10b981]/30' : isLocked ? 'border-white/5 opacity-75' : isRecommended ? 'border-[#a855f7]/30' : 'border-white/10'} rounded-3xl p-4 md:p-8 flex gap-4 md:gap-8 relative overflow-hidden group transition-all duration-300 ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                       onClick={() => { if (!isLocked) { setActivePuzzle(puzzle); setView('puzzle'); } }}
                     >
                       {puzzle.id === dailyChallengeId && (
@@ -711,6 +728,14 @@ export default function App() {
                           <div className="flex items-center gap-2">
                             <Zap className="w-4 h-4 text-white" />
                             <span className="text-[10px] font-bold text-white tracking-widest font-mono uppercase">Daily Bonus</span>
+                          </div>
+                        </div>
+                      )}
+                      {isRecommended && puzzle.id !== dailyChallengeId && (
+                        <div className="absolute top-0 left-0 bg-gradient-to-r from-[#7c3aed] to-[#a855f7] px-4 py-1.5 rounded-br-2xl z-20 shadow-lg">
+                          <div className="flex items-center gap-2">
+                            <Star className="w-3.5 h-3.5 text-white" />
+                            <span className="text-[10px] font-bold text-white tracking-widest font-mono uppercase">RECOMMENDED</span>
                           </div>
                         </div>
                       )}
@@ -727,6 +752,12 @@ export default function App() {
                         <div className="flex justify-between items-start mb-4">
                           <h3 className="text-2xl font-bold text-white tracking-wide uppercase truncate pr-4">{puzzle.title}</h3>
                           <div className="flex gap-3">
+                            <div className="text-right">
+                              <p className="text-[8px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">YIELD</p>
+                              <span className="text-[10px] font-bold tracking-widest px-3 py-1 rounded-lg border text-[#10b981] border-[#10b981]/30 font-mono uppercase">
+                                +{puzzle.id === dailyChallengeId ? puzzle.points * DAILY_CHALLENGE_MULTIPLIER : puzzle.points}
+                              </span>
+                            </div>
                             <div className="text-right">
                               <p className="text-[8px] text-[#a3a3a3] tracking-widest mb-1 font-mono uppercase">DIFFICULTY</p>
                               <span className={`text-[10px] font-bold tracking-widest px-3 py-1 rounded-lg border ${difficultyColor} font-mono uppercase`}>
@@ -782,6 +813,16 @@ export default function App() {
                   </button>
                 </div>
               )}
+            </motion.div>
+          ) : view === 'leaderboard' ? (
+            <motion.div
+              key="leaderboard"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="max-w-3xl mx-auto"
+            >
+              <Leaderboard user={user} />
             </motion.div>
           ) : activePuzzle ? (
             <motion.div 
@@ -857,6 +898,30 @@ export default function App() {
                   onSolved={(points) => handleSolve(activePuzzle.id, points)} 
                 />
 
+                {/* Next Mission CTA */}
+                {user.solvedPuzzles.includes(activePuzzle.id) && (() => {
+                  const nextMission = sortedPuzzles.find(p => !user.solvedPuzzles.includes(p.id) && user.score >= DIFFICULTY_THRESHOLDS[p.difficulty]);
+                  return nextMission ? (
+                    <motion.div
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="mt-6 flex items-center justify-between bg-[#10b981]/5 border border-[#10b981]/20 rounded-xl p-5"
+                    >
+                      <div>
+                        <p className="text-[9px] font-mono font-bold tracking-widest text-[#10b981] uppercase mb-1">NEXT MISSION READY</p>
+                        <p className="text-sm font-bold text-white truncate max-w-[200px]">{nextMission.title}</p>
+                      </div>
+                      <button
+                        onClick={() => setActivePuzzle(nextMission)}
+                        className="flex items-center gap-2 px-5 py-3 bg-[#10b981] hover:bg-[#059669] text-white rounded-xl text-xs font-bold tracking-widest transition-all font-mono shadow-[0_4px_15px_rgba(16,185,129,0.3)] hover:shadow-[0_4px_20px_rgba(16,185,129,0.5)] shrink-0"
+                      >
+                        ADVANCE <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </motion.div>
+                  ) : null;
+                })()}
+
                 {/* Footer Progress */}
                 <div className="mt-12 pt-6 border-t border-white/5 flex justify-between items-center text-[9px] font-bold tracking-widest font-mono">
                   <span className="text-[#10b981]">DISK_WRITE: OK</span>
@@ -887,11 +952,13 @@ export default function App() {
           <span className="text-[9px] font-bold tracking-widest font-mono">MAP</span>
           <span className="absolute -top-1 -right-2 text-[7px] font-bold font-mono text-[#eab308] bg-[#eab308]/10 border border-[#eab308]/20 px-1 rounded">SOON</span>
         </div>
-        <div className="flex flex-col items-center gap-1 text-[#333] relative">
-          <MessageSquare className="w-6 h-6" />
-          <span className="text-[9px] font-bold tracking-widest font-mono">COMMS</span>
-          <span className="absolute -top-1 -right-2 text-[7px] font-bold font-mono text-[#eab308] bg-[#eab308]/10 border border-[#eab308]/20 px-1 rounded">SOON</span>
-        </div>
+        <button
+          onClick={() => { setView('leaderboard'); setActivePuzzle(null); }}
+          className={`flex flex-col items-center gap-1 transition-all ${view === 'leaderboard' ? 'text-[#eab308]' : 'text-[#555]'}`}
+        >
+          <Trophy className="w-6 h-6" />
+          <span className="text-[9px] font-bold tracking-widest font-mono">RANKINGS</span>
+        </button>
       </div>
 
       <AnimatePresence>
@@ -1543,6 +1610,121 @@ function MastermindSolver({ puzzle, isSolved, onSolved }: { puzzle: Puzzle, isSo
           )}
         </button>
       </form>
+    </div>
+  );
+}
+
+const MOCK_AGENTS: { username: string; score: number; rank: string }[] = [
+  { username: 'FALCON_SEVEN', score: 5200, rank: '00 STATUS' },
+  { username: 'IRON_GHOST', score: 3750, rank: 'MASTER SPY' },
+  { username: 'VIPER_ONE', score: 2840, rank: 'MASTER SPY' },
+  { username: 'NOVA_CIPHER', score: 1920, rank: 'SPECIAL AGENT' },
+  { username: 'WRAITH_X', score: 1340, rank: 'SPECIAL AGENT' },
+  { username: 'PHANTOM_SIX', score: 890, rank: 'OPERATIVE' },
+  { username: 'ECLIPSE_3', score: 720, rank: 'OPERATIVE' },
+  { username: 'STORM_KITE', score: 480, rank: 'FIELD AGENT' },
+  { username: 'CIPHER_BLUE', score: 310, rank: 'FIELD AGENT' },
+  { username: 'DELTA_ROOK', score: 190, rank: 'FIELD AGENT' },
+];
+
+function Leaderboard({ user }: { user: User }) {
+  const allAgents = [...MOCK_AGENTS.filter(a => a.username !== user.username), { username: user.username, score: user.score, rank: user.rank }]
+    .sort((a, b) => b.score - a.score);
+
+  const userPosition = allAgents.findIndex(a => a.username === user.username);
+
+  const getRankColor = (rank: string) => {
+    if (rank === '00 STATUS') return 'text-[#ef4444]';
+    if (rank === 'MASTER SPY') return 'text-[#a855f7]';
+    if (rank === 'SPECIAL AGENT') return 'text-[#3b82f6]';
+    if (rank === 'OPERATIVE') return 'text-[#10b981]';
+    return 'text-[#eab308]';
+  };
+
+  const getMedalColor = (pos: number) => {
+    if (pos === 0) return 'text-[#eab308]';
+    if (pos === 1) return 'text-[#a3a3a3]';
+    if (pos === 2) return 'text-[#cd7f32]';
+    return 'text-[#555]';
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-4 mb-8">
+        <div className="p-3 border border-[#eab308]/20 rounded-xl bg-gradient-to-b from-[#eab308]/20 to-transparent shadow-[0_0_20px_rgba(234,179,8,0.1)]">
+          <Trophy className="w-6 h-6 text-[#eab308]" />
+        </div>
+        <div>
+          <h2 className="text-xl font-black tracking-widest text-white uppercase">GLOBAL_RANKINGS</h2>
+          <p className="text-[10px] text-[#eab308] tracking-widest font-mono uppercase">TOP OPERATIVES // INTELLIGENCE_AUTHORITY</p>
+        </div>
+      </div>
+
+      {/* User's position card */}
+      <div className="bg-[#111] border border-[#eab308]/30 rounded-2xl p-6 flex items-center justify-between shadow-[0_0_20px_rgba(234,179,8,0.05)]">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-[#eab308]/10 border border-[#eab308]/30 flex items-center justify-center">
+            <span className="text-sm font-black text-[#eab308] font-mono">#{userPosition + 1}</span>
+          </div>
+          <div>
+            <p className="text-[9px] font-mono text-[#a3a3a3] tracking-widest uppercase mb-0.5">YOUR POSITION</p>
+            <p className="text-base font-bold text-white tracking-wider">{user.username}</p>
+          </div>
+        </div>
+        <div className="text-right">
+          <p className="text-[9px] font-mono text-[#a3a3a3] tracking-widest uppercase mb-0.5">INTEL YIELD</p>
+          <p className="text-xl font-black text-[#10b981] font-mono">{user.score}</p>
+        </div>
+      </div>
+
+      {/* Full leaderboard */}
+      <div className="bg-[#111] border border-white/5 rounded-2xl overflow-hidden shadow-xl">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/5 bg-[#0a0a0a]">
+          <span className="text-[9px] font-bold tracking-widest font-mono text-[#a3a3a3] uppercase">OPERATIVE</span>
+          <div className="flex items-center gap-8">
+            <span className="text-[9px] font-bold tracking-widest font-mono text-[#a3a3a3] uppercase">RANK</span>
+            <span className="text-[9px] font-bold tracking-widest font-mono text-[#a3a3a3] uppercase">YIELD</span>
+          </div>
+        </div>
+        {allAgents.map((agent, index) => {
+          const isCurrentUser = agent.username === user.username;
+          return (
+            <motion.div
+              key={agent.username}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.04 }}
+              className={`flex items-center justify-between px-6 py-4 border-b border-white/5 last:border-0 transition-colors ${isCurrentUser ? 'bg-[#eab308]/5' : 'hover:bg-white/2'}`}
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-8 flex items-center justify-center">
+                  {index < 3 ? (
+                    <Medal className={`w-5 h-5 ${getMedalColor(index)}`} />
+                  ) : (
+                    <span className="text-xs font-bold font-mono text-[#555]">#{index + 1}</span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className={`text-sm font-bold tracking-wider font-mono ${isCurrentUser ? 'text-[#eab308]' : 'text-white'}`}>
+                    {agent.username}
+                  </span>
+                  {isCurrentUser && (
+                    <span className="text-[8px] font-bold font-mono text-[#eab308] bg-[#eab308]/10 border border-[#eab308]/20 px-2 py-0.5 rounded-full tracking-widest">YOU</span>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-8">
+                <span className={`text-[10px] font-bold tracking-widest font-mono uppercase hidden sm:block ${getRankColor(agent.rank)}`}>{agent.rank}</span>
+                <span className="text-sm font-black font-mono text-[#10b981] w-16 text-right">{agent.score.toLocaleString()}</span>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      <p className="text-center text-[9px] font-mono text-[#333] tracking-widest uppercase pb-2">
+        Live rankings sync available in a future update.
+      </p>
     </div>
   );
 }
