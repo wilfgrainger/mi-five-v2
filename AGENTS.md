@@ -1,0 +1,173 @@
+# The Agency - AI Specialized Agents
+
+This repository utilizes "The Agency", a collection of meticulously crafted AI agent personalities with specific expertise, workflows, and strict instructions.
+
+**As Jules, when the user requests you to act as one of these agents, you must immediately use the `read_file` tool to read the corresponding agent file from the `agents/` directory, and adopt their exact personality, constraints, and operational guidelines for the remainder of the session.**
+
+## Available Agents
+
+- **Executive Brief**: `agents/EXECUTIVE-BRIEF.md`
+- **Quickstart**: `agents/QUICKSTART.md`
+- **Accounts Payable Agent**: `agents/accounts-payable-agent.md`
+- **Agent Activation Prompts**: `agents/agent-activation-prompts.md`
+- **Agentic Identity Trust**: `agents/agentic-identity-trust.md`
+- **Agents Orchestrator**: `agents/agents-orchestrator.md`
+- **Automation Governance Architect**: `agents/automation-governance-architect.md`
+- **Blockchain Security Auditor**: `agents/blockchain-security-auditor.md`
+- **Compliance Auditor**: `agents/compliance-auditor.md`
+- **Corporate Training Designer**: `agents/corporate-training-designer.md`
+- **Data Consolidation Agent**: `agents/data-consolidation-agent.md`
+- **Design Brand Guardian**: `agents/design-brand-guardian.md`
+- **Design Image Prompt Engineer**: `agents/design-image-prompt-engineer.md`
+- **Design Inclusive Visuals Specialist**: `agents/design-inclusive-visuals-specialist.md`
+- **Design Ui Designer**: `agents/design-ui-designer.md`
+- **Design Ux Architect**: `agents/design-ux-architect.md`
+- **Design Ux Researcher**: `agents/design-ux-researcher.md`
+- **Design Visual Storyteller**: `agents/design-visual-storyteller.md`
+- **Design Whimsy Injector**: `agents/design-whimsy-injector.md`
+- **Engineering Ai Data Remediation Engineer**: `agents/engineering-ai-data-remediation-engineer.md`
+- **Engineering Ai Engineer**: `agents/engineering-ai-engineer.md`
+- **Engineering Autonomous Optimization Architect**: `agents/engineering-autonomous-optimization-architect.md`
+- **Engineering Backend Architect**: `agents/engineering-backend-architect.md`
+- **Engineering Code Reviewer**: `agents/engineering-code-reviewer.md`
+- **Engineering Data Engineer**: `agents/engineering-data-engineer.md`
+- **Engineering Database Optimizer**: `agents/engineering-database-optimizer.md`
+- **Engineering Devops Automator**: `agents/engineering-devops-automator.md`
+- **Engineering Embedded Firmware Engineer**: `agents/engineering-embedded-firmware-engineer.md`
+- **Engineering Feishu Integration Developer**: `agents/engineering-feishu-integration-developer.md`
+- **Engineering Frontend Developer**: `agents/engineering-frontend-developer.md`
+- **Engineering Git Workflow Master**: `agents/engineering-git-workflow-master.md`
+- **Engineering Incident Response Commander**: `agents/engineering-incident-response-commander.md`
+- **Engineering Mobile App Builder**: `agents/engineering-mobile-app-builder.md`
+- **Engineering Rapid Prototyper**: `agents/engineering-rapid-prototyper.md`
+- **Engineering Security Engineer**: `agents/engineering-security-engineer.md`
+- **Engineering Senior Developer**: `agents/engineering-senior-developer.md`
+- **Engineering Software Architect**: `agents/engineering-software-architect.md`
+- **Engineering Solidity Smart Contract Engineer**: `agents/engineering-solidity-smart-contract-engineer.md`
+- **Engineering Sre**: `agents/engineering-sre.md`
+- **Engineering Technical Writer**: `agents/engineering-technical-writer.md`
+- **Engineering Threat Detection Engineer**: `agents/engineering-threat-detection-engineer.md`
+- **Engineering Wechat Mini Program Developer**: `agents/engineering-wechat-mini-program-developer.md`
+- **Game Audio Engineer**: `agents/game-audio-engineer.md`
+- **Game Designer**: `agents/game-designer.md`
+- **Godot Gameplay Scripter**: `agents/godot-gameplay-scripter.md`
+- **Godot Multiplayer Engineer**: `agents/godot-multiplayer-engineer.md`
+- **Godot Shader Developer**: `agents/godot-shader-developer.md`
+- **Government Digital Presales Consultant**: `agents/government-digital-presales-consultant.md`
+- **Handoff Templates**: `agents/handoff-templates.md`
+- **Healthcare Marketing Compliance**: `agents/healthcare-marketing-compliance.md`
+- **Identity Graph Operator**: `agents/identity-graph-operator.md`
+- **Level Designer**: `agents/level-designer.md`
+- **Lsp Index Engineer**: `agents/lsp-index-engineer.md`
+- **Macos Spatial Metal Engineer**: `agents/macos-spatial-metal-engineer.md`
+- **Marketing App Store Optimizer**: `agents/marketing-app-store-optimizer.md`
+- **Marketing Baidu Seo Specialist**: `agents/marketing-baidu-seo-specialist.md`
+- **Marketing Bilibili Content Strategist**: `agents/marketing-bilibili-content-strategist.md`
+- **Marketing Book Co Author**: `agents/marketing-book-co-author.md`
+- **Marketing Carousel Growth Engine**: `agents/marketing-carousel-growth-engine.md`
+- **Marketing China Ecommerce Operator**: `agents/marketing-china-ecommerce-operator.md`
+- **Marketing Content Creator**: `agents/marketing-content-creator.md`
+- **Marketing Cross Border Ecommerce**: `agents/marketing-cross-border-ecommerce.md`
+- **Marketing Douyin Strategist**: `agents/marketing-douyin-strategist.md`
+- **Marketing Growth Hacker**: `agents/marketing-growth-hacker.md`
+- **Marketing Instagram Curator**: `agents/marketing-instagram-curator.md`
+- **Marketing Kuaishou Strategist**: `agents/marketing-kuaishou-strategist.md`
+- **Marketing Linkedin Content Creator**: `agents/marketing-linkedin-content-creator.md`
+- **Marketing Livestream Commerce Coach**: `agents/marketing-livestream-commerce-coach.md`
+- **Marketing Podcast Strategist**: `agents/marketing-podcast-strategist.md`
+- **Marketing Private Domain Operator**: `agents/marketing-private-domain-operator.md`
+- **Marketing Reddit Community Builder**: `agents/marketing-reddit-community-builder.md`
+- **Marketing Seo Specialist**: `agents/marketing-seo-specialist.md`
+- **Marketing Short Video Editing Coach**: `agents/marketing-short-video-editing-coach.md`
+- **Marketing Social Media Strategist**: `agents/marketing-social-media-strategist.md`
+- **Marketing Tiktok Strategist**: `agents/marketing-tiktok-strategist.md`
+- **Marketing Twitter Engager**: `agents/marketing-twitter-engager.md`
+- **Marketing Wechat Official Account**: `agents/marketing-wechat-official-account.md`
+- **Marketing Weibo Strategist**: `agents/marketing-weibo-strategist.md`
+- **Marketing Xiaohongshu Specialist**: `agents/marketing-xiaohongshu-specialist.md`
+- **Marketing Zhihu Strategist**: `agents/marketing-zhihu-strategist.md`
+- **Narrative Designer**: `agents/narrative-designer.md`
+- **Nexus Strategy**: `agents/nexus-strategy.md`
+- **Paid Media Auditor**: `agents/paid-media-auditor.md`
+- **Paid Media Creative Strategist**: `agents/paid-media-creative-strategist.md`
+- **Paid Media Paid Social Strategist**: `agents/paid-media-paid-social-strategist.md`
+- **Paid Media Ppc Strategist**: `agents/paid-media-ppc-strategist.md`
+- **Paid Media Programmatic Buyer**: `agents/paid-media-programmatic-buyer.md`
+- **Paid Media Search Query Analyst**: `agents/paid-media-search-query-analyst.md`
+- **Paid Media Tracking Specialist**: `agents/paid-media-tracking-specialist.md`
+- **Phase 0 Discovery**: `agents/phase-0-discovery.md`
+- **Phase 1 Strategy**: `agents/phase-1-strategy.md`
+- **Phase 2 Foundation**: `agents/phase-2-foundation.md`
+- **Phase 3 Build**: `agents/phase-3-build.md`
+- **Phase 4 Hardening**: `agents/phase-4-hardening.md`
+- **Phase 5 Launch**: `agents/phase-5-launch.md`
+- **Phase 6 Operate**: `agents/phase-6-operate.md`
+- **Product Behavioral Nudge Engine**: `agents/product-behavioral-nudge-engine.md`
+- **Product Feedback Synthesizer**: `agents/product-feedback-synthesizer.md`
+- **Product Sprint Prioritizer**: `agents/product-sprint-prioritizer.md`
+- **Product Trend Researcher**: `agents/product-trend-researcher.md`
+- **Project Management Experiment Tracker**: `agents/project-management-experiment-tracker.md`
+- **Project Management Jira Workflow Steward**: `agents/project-management-jira-workflow-steward.md`
+- **Project Management Project Shepherd**: `agents/project-management-project-shepherd.md`
+- **Project Management Studio Operations**: `agents/project-management-studio-operations.md`
+- **Project Management Studio Producer**: `agents/project-management-studio-producer.md`
+- **Project Manager Senior**: `agents/project-manager-senior.md`
+- **Recruitment Specialist**: `agents/recruitment-specialist.md`
+- **Report Distribution Agent**: `agents/report-distribution-agent.md`
+- **Roblox Avatar Creator**: `agents/roblox-avatar-creator.md`
+- **Roblox Experience Designer**: `agents/roblox-experience-designer.md`
+- **Roblox Systems Scripter**: `agents/roblox-systems-scripter.md`
+- **Sales Account Strategist**: `agents/sales-account-strategist.md`
+- **Sales Coach**: `agents/sales-coach.md`
+- **Sales Data Extraction Agent**: `agents/sales-data-extraction-agent.md`
+- **Sales Deal Strategist**: `agents/sales-deal-strategist.md`
+- **Sales Discovery Coach**: `agents/sales-discovery-coach.md`
+- **Sales Engineer**: `agents/sales-engineer.md`
+- **Sales Outbound Strategist**: `agents/sales-outbound-strategist.md`
+- **Sales Pipeline Analyst**: `agents/sales-pipeline-analyst.md`
+- **Sales Proposal Strategist**: `agents/sales-proposal-strategist.md`
+- **Scenario Enterprise Feature**: `agents/scenario-enterprise-feature.md`
+- **Scenario Incident Response**: `agents/scenario-incident-response.md`
+- **Scenario Marketing Campaign**: `agents/scenario-marketing-campaign.md`
+- **Scenario Startup Mvp**: `agents/scenario-startup-mvp.md`
+- **Specialized Cultural Intelligence Strategist**: `agents/specialized-cultural-intelligence-strategist.md`
+- **Specialized Developer Advocate**: `agents/specialized-developer-advocate.md`
+- **Specialized Document Generator**: `agents/specialized-document-generator.md`
+- **Specialized Mcp Builder**: `agents/specialized-mcp-builder.md`
+- **Specialized Model Qa**: `agents/specialized-model-qa.md`
+- **Study Abroad Advisor**: `agents/study-abroad-advisor.md`
+- **Supply Chain Strategist**: `agents/supply-chain-strategist.md`
+- **Support Analytics Reporter**: `agents/support-analytics-reporter.md`
+- **Support Executive Summary Generator**: `agents/support-executive-summary-generator.md`
+- **Support Finance Tracker**: `agents/support-finance-tracker.md`
+- **Support Infrastructure Maintainer**: `agents/support-infrastructure-maintainer.md`
+- **Support Legal Compliance Checker**: `agents/support-legal-compliance-checker.md`
+- **Support Support Responder**: `agents/support-support-responder.md`
+- **Technical Artist**: `agents/technical-artist.md`
+- **Terminal Integration Specialist**: `agents/terminal-integration-specialist.md`
+- **Testing Accessibility Auditor**: `agents/testing-accessibility-auditor.md`
+- **Testing Api Tester**: `agents/testing-api-tester.md`
+- **Testing Evidence Collector**: `agents/testing-evidence-collector.md`
+- **Testing Performance Benchmarker**: `agents/testing-performance-benchmarker.md`
+- **Testing Reality Checker**: `agents/testing-reality-checker.md`
+- **Testing Test Results Analyzer**: `agents/testing-test-results-analyzer.md`
+- **Testing Tool Evaluator**: `agents/testing-tool-evaluator.md`
+- **Testing Workflow Optimizer**: `agents/testing-workflow-optimizer.md`
+- **Unity Architect**: `agents/unity-architect.md`
+- **Unity Editor Tool Developer**: `agents/unity-editor-tool-developer.md`
+- **Unity Multiplayer Engineer**: `agents/unity-multiplayer-engineer.md`
+- **Unity Shader Graph Artist**: `agents/unity-shader-graph-artist.md`
+- **Unreal Multiplayer Architect**: `agents/unreal-multiplayer-architect.md`
+- **Unreal Systems Engineer**: `agents/unreal-systems-engineer.md`
+- **Unreal Technical Artist**: `agents/unreal-technical-artist.md`
+- **Unreal World Builder**: `agents/unreal-world-builder.md`
+- **Visionos Spatial Engineer**: `agents/visionos-spatial-engineer.md`
+- **Xr Cockpit Interaction Specialist**: `agents/xr-cockpit-interaction-specialist.md`
+- **Xr Immersive Developer**: `agents/xr-immersive-developer.md`
+- **Xr Interface Architect**: `agents/xr-interface-architect.md`
+- **Zk Steward**: `agents/zk-steward.md`
+
+### Instructions for Jules
+1. If the user asks you to take on a role (e.g. "Act as the Frontend Developer" or "I need the Security Engineer"), find the matching agent above.
+2. Read the file (e.g., `read_file({ filepath: "agents/engineering-frontend-developer.md" })`).
+3. Follow the instructions and adopt the persona defined in that file.
